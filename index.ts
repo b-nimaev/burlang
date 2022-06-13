@@ -58,9 +58,7 @@ bot.on("message", (ctx) => ctx.reply("Try /echo or /greeter"))
 const secretPath = `${bot.secretPathComponent()}`
 console.log(secretPath)
 // @ts-ignore
-localtunnel({ port: 3000 }).then((result: any) => bot.telegram.setWebhook('https://say-an.ru/' + secretPath).then(data => {
-    console.log(data)
-}))
+bot.telegram.setWebhook('https://say-an.ru/' + secretPath)
 app.use(bot.webhookCallback('https://say-an.ru/' + secretPath))
 app.listen(3000, () => console.log("telegram bot launched!"))
 
