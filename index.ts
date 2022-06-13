@@ -59,7 +59,9 @@ const secretPath = `/telegraf/${bot.secretPathComponent()}`
 console.log(secretPath)
 // @ts-ignore
 bot.telegram.setWebhook('https://say-an.ru/' + secretPath)
-app.use((secretPath))
+app.use(bot.webhookCallback(secretPath), function () {
+    console.log('hi')
+})
 app.listen(5000, () => console.log("telegram bot launched!"))
 
 // Enable graceful stop
