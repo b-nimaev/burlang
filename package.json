@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "telegraf": "^4.8.5"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.42"
+  }
+}
