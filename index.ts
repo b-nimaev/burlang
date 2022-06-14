@@ -58,9 +58,9 @@ bot.on("message", (ctx) => ctx.reply("Try /echo or /greeter"))
 const secretPath = `/telegraf/${bot.secretPathComponent()}`
 console.log(secretPath)
 // @ts-ignore
-bot.telegram.setWebhook('https://127.0.0.1/' + secretPath)
+bot.telegram.setWebhook('https://localhost/' + secretPath)
 app.use(bot.webhookCallback(secretPath))
-app.listen(443, () => console.log("telegram bot launched!"))
+app.listen(80, () => console.log("telegram bot launched!"))
 
 // Enable graceful stop
 process.once('SIGINT', () => bot.stop('SIGINT'))
