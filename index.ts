@@ -33,13 +33,13 @@ if (process.env.mode === "development") {
         // bot.telegram.deleteWebhook();
     })
 } else {
-    console.log(`${process.env.ip}${secretPath}`)
+    // console.log(`${process.env.ip}${secretPath}`)
     bot.telegram.setWebhook(`https://say-an.ru/${secretPath}`)
 }
 
 app.get("/", (req: Request, res: Response) => res.send("Hello!"))
 app.use(bot.webhookCallback(secretPath))
-app.listen(3000, () => console.log("telegram bot launched!"))
+app.listen(5000, () => console.log("telegram bot launched!"))
 
 // Enable graceful stop
 process.once('SIGINT', () => bot.stop('SIGINT'))
