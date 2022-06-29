@@ -3,7 +3,7 @@ import { Scenes, session, Telegraf, Context, Composer } from 'telegraf'
 import home from './bot/home/home'
 import { MyContext } from "./bot/model/Context"
 
-import localtunnel from "localtunnel"
+const localtunnel = require("localtunnel");
 const express = require("express")
 require("dotenv").config()
 
@@ -35,7 +35,7 @@ if (process.env.mode === "development") {
         // bot.telegram.deleteWebhook();
     })
 } else {
-    bot.telegram.setWebhook(`https://say-an.ru/${secretPath}`)
+    bot.telegram.setWebhook(`https://say-an.ru${secretPath}`)
         .then((data) => console.log(data))
 }
 
