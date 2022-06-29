@@ -3,7 +3,7 @@ import { Scenes, session, Telegraf, Context, Composer } from 'telegraf'
 import home from './bot/home/home'
 import { MyContext } from "./bot/model/Context"
 
-const localtunnel = require("localtunnel")
+import localtunnel from "localtunnel"
 const express = require("express")
 require("dotenv").config()
 
@@ -16,6 +16,7 @@ const stage = new Scenes.Stage<MyContext>([home], {
     default: 'home'
 })
 
+bot.start((ctx) => { console.log(ctx.message.text) })
 bot.use(session())
 bot.use(stage.middleware())
 bot.use((ctx, next) => {
@@ -27,14 +28,15 @@ bot.use((ctx, next) => {
 // Backend
 const secretPath = `/telegraf/${bot.secretPathComponent()}`
 if (process.env.mode === "development") {
-    // @ts-ignore
-    localtunnel({ port: 3000 }).then(result => {
-        bot.telegram.setWebhook(`${result.url}${secretPath}`)
+    console.log(secretPath)
+    localtunnel({ port: 3000 }).then((result: any) => {
+        // console.log(secretPath)
+        // bot.telegram.setWebhook(`${result.url}${secretPath}`).then(data => console.log(data))
         // bot.telegram.deleteWebhook();
     })
 } else {
-    // console.log(`${process.env.ip}${secretPath}`)
     bot.telegram.setWebhook(`https://say-an.ru/${secretPath}`)
+        .then((data) => console.log(data))
 }
 
 app.get("/", (req: Request, res: Response) => res.send("Hello!"))
