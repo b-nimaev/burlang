@@ -16,7 +16,6 @@ const stage = new Scenes.Stage<MyContext>([home], {
     default: 'home'
 })
 
-bot.start((ctx) => { console.log(ctx.message.text) })
 bot.use(session())
 bot.use(stage.middleware())
 bot.use((ctx, next) => {
