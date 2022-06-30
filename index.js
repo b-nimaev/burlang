@@ -21,20 +21,18 @@ bot.use(function (ctx, next) {
 });
 // Backend
 var secretPath = "/telegraf/".concat(bot.secretPathComponent());
+console.log(secretPath);
 if (process.env.mode === "development") {
-    // @ts-ignore
-    localtunnel({ port: 3000 }).then(function (result) {
-        bot.telegram.setWebhook("".concat(result.url).concat(secretPath));
-        // bot.telegram.deleteWebhook();
-    });
+    bot.telegram.setWebhook("https://say-an.ru".concat(secretPath))
+        .then(function (status) { return console.log('Webhook setted: ' + status); });
 }
 else {
-    console.log("".concat(process.env.ip).concat(secretPath));
-    bot.telegram.setWebhook("https://say-an.ru/".concat(secretPath));
+    bot.telegram.setWebhook("https://say-an.ru".concat(secretPath))
+        .then(function (status) { return console.log('Webhook setted: ' + status); });
 }
 app.get("/", function (req, res) { return res.send("Hello!"); });
-app.use(bot.webhookCallback(secretPath));
-app.listen(3000, function () { return console.log("telegram bot launched!"); });
+app.use(function () { bot.webhookCallback(secretPath), console.log("hi"); });
+app.listen(5000, function () { return console.log("telegram bot launched!"); });
 // Enable graceful stop
 process.once('SIGINT', function () { return bot.stop('SIGINT'); });
 process.once('SIGTERM', function () { return bot.stop('SIGTERM'); });

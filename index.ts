@@ -28,15 +28,11 @@ bot.use((ctx, next) => {
 const secretPath = `/telegraf/${bot.secretPathComponent()}`
 console.log(secretPath)
 if (process.env.mode === "development") {
-    console.log(secretPath)
-    localtunnel({ port: 3000 }).then((result: any) => {
-        // console.log(secretPath)
-        // bot.telegram.setWebhook(`${result.url}${secretPath}`).then(data => console.log(data))
-        // bot.telegram.deleteWebhook();
-    })
+    bot.telegram.setWebhook(`https://say-an.ru${secretPath}`)
+        .then((status) => console.log('Webhook setted: ' + status))
 } else {
     bot.telegram.setWebhook(`https://say-an.ru${secretPath}`)
-        .then((data) => console.log(data))
+        .then((status) => console.log('Webhook setted: ' + status))
 }
 
 app.get("/", (req: Request, res: Response) => res.send("Hello!"))

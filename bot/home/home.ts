@@ -28,8 +28,7 @@ let __extra: ExtraEditMessageText = {
     }
 }
 
-let message = `In order to become a member of premium signals, you need to choose which subscription you need. Daily receipt of 5 to 10 signals!\n\n By purchasing our signals, you get access to trading strategies that are a guaranteed guarantee of your success! If our signals do not bring you profit, we will return the funds!\n\n Choose from the list below 👇`
-
+let message = `Самоучитель бурятского языка.\n\n Выберите нужный раздел, чтобы начать изучение 👇`
 
 const handler = new Composer<MyContext>();
 const dashboard = new Composer<MyContext>();
@@ -86,9 +85,58 @@ home.action("vocabular", async (ctx) => {
         }
     })
 })
+
+home.action("study", async (ctx) => {
+    ctx.answerCbQuery()
+    ctx.wizard.selectStep(3)
+    ctx.editMessageText("Обучение", {
+        parse_mode: 'HTML', reply_markup: {
+            inline_keyboard: [
+                [
+                    {
+                        text: 'Приступить',
+                        callback_data: 'start'
+                    }
+                ],
+                [
+                    {
+                        text: 'Назад',
+                        callback_data: 'home'
+                    }
+                ]
+            ]
+        }
+    })
+})
+
+study.action("start", async (ctx) => {
+    ctx.answerCbQuery()
+})
+study.on("message", async (ctx) => {
+    ctx.reply("Обучение", {
+        parse_mode: 'HTML', reply_markup: {
+            inline_keyboard: [
+                [
+                    {
+                        text: 'Приступить',
+                        callback_data: 'start'
+                    }
+                ],
+                [
+                    {
+                        text: 'Назад',
+                        callback_data: 'home'
+                    }
+                ]
+            ]
+        }
+    })
+})
+
 vocabular.on("message", async (ctx) => {
     ctx.reply(ctx.message.from.first_name)
 })
+
 home.action("home", async (ctx) => {
     ctx.answerCbQuery()
     ctx.wizard.selectStep(0)
