@@ -27,6 +27,7 @@ bot.use((ctx, next) => {
 
 // Backend
 const secretPath = `/telegraf/${bot.secretPathComponent()}`
+console.log(secretPath)
 if (process.env.mode === "development") {
     console.log(secretPath)
     localtunnel({ port: 3000 }).then((result: any) => {
