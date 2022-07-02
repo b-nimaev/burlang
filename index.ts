@@ -1,9 +1,16 @@
 import { Request, Response } from 'express'
 import { Scenes, session, Telegraf, Context, Composer } from 'telegraf'
-import home from './bot/home/home'
+import dashboard from './bot/dashboard';
+import home, { greeting } from './bot/home/home'
 import { MyContext } from "./bot/model/Context"
+import study from './bot/study';
+import vocabular from './bot/vocabular/index';
+import vocabularSettings from './bot/vocabular/settings';
 
-const localtunnel = require("localtunnel");
+const fs = require('fs');
+const key = fs.readFileSync('./ssl/localhost.decrypted.key');
+const cert = fs.readFileSync('./ssl/localhost.crt');
+const https = require('https');
 const express = require("express")
 require("dotenv").config()
 
@@ -11,8 +18,9 @@ const { enter, leave } = Scenes.Stage
 
 const bot = new Telegraf<MyContext>(<string>process.env.BOT_TOKEN)
 const app = express()
+const port = 8443
 
-const stage = new Scenes.Stage<MyContext>([home], {
+const stage = new Scenes.Stage<MyContext>([home, vocabular, dashboard, study, vocabularSettings], {
     default: 'home'
 })
 
@@ -26,9 +34,9 @@ bot.use((ctx, next) => {
 
 // Backend
 const secretPath = `/telegraf/${bot.secretPathComponent()}`
-console.log(secretPath)
+// console.log(secretPath)
 if (process.env.mode === "development") {
-    bot.telegram.setWebhook(`https://say-an.ru${secretPath}`)
+    bot.telegram.setWebhook(`https://391d-81-23-175-121.eu.ngrok.io${secretPath}`)
         .then((status) => console.log('Webhook setted: ' + status))
 } else {
     bot.telegram.setWebhook(`https://say-an.ru${secretPath}`)
@@ -37,7 +45,8 @@ if (process.env.mode === "development") {
 
 app.get("/", (req: Request, res: Response) => res.send("Hello!"))
 app.use(bot.webhookCallback(secretPath))
-app.listen(5000, () => console.log("telegram bot launched!"))
+const server = https.createServer({ key, cert }, app);
+server.listen(port, () => console.log("telegram bot launched!"))
 
 // Enable graceful stop
 process.once('SIGINT', () => bot.stop('SIGINT'))
