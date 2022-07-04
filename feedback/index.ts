@@ -14,7 +14,7 @@ require("dotenv").config()
 
 const { enter, leave } = Scenes.Stage
 
-const bot = new Telegraf<MyContext>(<string>process.env.BOT_TOKEN)
+const bot = new Telegraf<MyContext>(<string>process.env.BOT_TOKEN_FEEDBACK)
 const app = express()
 const port = 1337
 
