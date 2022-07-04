@@ -16,7 +16,7 @@ const { enter, leave } = Scenes.Stage
 
 const bot = new Telegraf<MyContext>(<string>process.env.BOT_TOKEN)
 const app = express()
-const port = 8443
+const port = 1337
 
 const stage = new Scenes.Stage<MyContext>([home], {
     default: 'home'
@@ -54,7 +54,7 @@ bot.use((ctx, next) => {
 }())
 
 // Backend
-const secretPath = `/telegraf/${bot.secretPathComponent()}`
+const secretPath = `/feedback/${bot.secretPathComponent()}`
 // console.log(secretPath)
 if (process.env.mode === "development") {
     bot.telegram.setWebhook(`https://74de-81-23-175-121.eu.ngrok.io${secretPath}`)
