@@ -37,38 +37,42 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var telegraf_1 = require("telegraf");
+var message = "Личный кабинет";
+var extra = {
+    parse_mode: 'HTML', reply_markup: {
+        inline_keyboard: [
+            [
+                {
+                    text: 'Обратная связь',
+                    callback_data: 'contact'
+                },
+                {
+                    text: 'На главную',
+                    callback_data: 'home'
+                }
+            ],
+        ]
+    }
+};
 function greeting(ctx) {
-    if (ctx.message) {
-        ctx.reply("Личный кабинет", {
-            parse_mode: 'HTML', reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: 'Добавить',
-                            callback_data: 'add'
-                        },
-                    ],
-                ]
-            }
-        });
+    if (ctx.update["callback_query"]) {
+        // @ts-ignore
+        ctx.editMessageText(message, extra);
     }
     else {
-        ctx.editMessageText("Личный кабинет", {
-            parse_mode: 'HTML', reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: 'Добавить',
-                            callback_data: 'add'
-                        },
-                    ],
-                ]
-            }
-        });
+        // @ts-ignore
+        ctx.reply(message, extra);
     }
 }
 var handler = new telegraf_1.Composer();
-var dashboard = new telegraf_1.Scenes.WizardScene("dashboard", handler);
+var dashboard = new telegraf_1.Scenes.WizardScene("dashboard", handler, (function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        if (ctx.update["message"]) {
+            console.log(ctx.update);
+        }
+        return [2 /*return*/];
+    });
+}); }));
 handler.on("message", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     return [2 /*return*/, greeting(ctx)];
 }); }); });
@@ -84,4 +88,19 @@ dashboard.command("home", function (ctx) { return __awaiter(void 0, void 0, void
 dashboard.enter(function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     return [2 /*return*/, greeting(ctx)];
 }); }); });
+dashboard.action("home", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        ctx.answerCbQuery();
+        ctx.scene.enter("home");
+        return [2 /*return*/];
+    });
+}); });
+dashboard.action("contact", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        ctx.answerCbQuery();
+        ctx.wizard.next();
+        ctx.editMessageText("Отправьте сообщение, администрация ответит в ближайшее время");
+        return [2 /*return*/];
+    });
+}); });
 exports["default"] = dashboard;

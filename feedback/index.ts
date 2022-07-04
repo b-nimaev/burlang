@@ -1,11 +1,9 @@
 import { Request, Response } from 'express'
-import { Scenes, session, Telegraf, Context, Composer } from 'telegraf'
-import dashboard from './bot/dashboard';
-import home, { greeting } from './bot/home'
-import { MyContext } from "./bot/model/Context"
-import study from './bot/study';
-import vocabular from './bot/vocabular';
-import vocabularSettings from './bot/vocabular/settings';
+import { Scenes, session, Telegraf, Context, Composer, Telegram } from 'telegraf'
+import { get_feedback_managers, get_feedback_props } from '../bot/controller';
+
+import { MyContext } from '../bot/model/Context'
+import home from './home';
 
 const fs = require('fs');
 const key = fs.readFileSync('./ssl/localhost.decrypted.key');
@@ -20,7 +18,7 @@ const bot = new Telegraf<MyContext>(<string>process.env.BOT_TOKEN)
 const app = express()
 const port = 8443
 
-const stage = new Scenes.Stage<MyContext>([home, vocabular, dashboard, study, vocabularSettings], {
+const stage = new Scenes.Stage<MyContext>([home], {
     default: 'home'
 })
 
@@ -30,13 +28,36 @@ bot.use((ctx, next) => {
     // @ts-ignore
     ctx.myProp = ctx.chat?.first_name
     return next()
-})
+});
+
+(async function () {
+
+    let users = await get_feedback_managers()
+    let messages = await get_feedback_props()
+    console.log(users[0])
+    for (let i = 0; i < users.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        await bot.telegram.sendMessage(users[i].id, `Входящих заявок ${messages.length}`, {
+            parse_mode: 'HTML',
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: 'Начать просмотр',
+                            callback_data: 'view'
+                        }
+                    ]
+                ]
+            }
+        })
+    }
+}())
 
 // Backend
 const secretPath = `/telegraf/${bot.secretPathComponent()}`
 // console.log(secretPath)
 if (process.env.mode === "development") {
-    bot.telegram.setWebhook(`https://8f48-81-23-175-121.eu.ngrok.io${secretPath}`)
+    bot.telegram.setWebhook(`https://74de-81-23-175-121.eu.ngrok.io${secretPath}`)
         .then((status) => console.log('Webhook setted: ' + status))
 } else {
     bot.telegram.setWebhook(`https://say-an.ru${secretPath}`)

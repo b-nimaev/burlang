@@ -6,20 +6,20 @@ const extra = {
         inline_keyboard: [
             [
                 {
-                    text: 'Добавить',
+                    text: 'Добавить перевод',
                     callback_data: 'add'
+                }
+            ],
+            [
+                {
+                    text: 'Настройки',
+                    callback_data: 'settings'
                 },
                 {
                     text: 'На главную',
                     callback_data: 'home'
                 },
             ],
-            [
-                {
-                    text: 'Настройки',
-                    callback_data: 'settings'
-                }
-            ]
         ]
     }
 }

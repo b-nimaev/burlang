@@ -1,8 +1,10 @@
 {
   "dependencies": {
+    "@a2seven/yoo-checkout": "^1.1.2",
     "dotenv": "^16.0.1",
     "mongodb": "^4.7.0",
-    "telegraf": "^4.8.5"
+    "telegraf": "^4.8.5",
+    "yookassa": "^0.1.1"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",

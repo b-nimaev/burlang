@@ -1,6 +1,6 @@
 import { Composer, Scenes } from "telegraf";
 import { MyContext } from "../model/Context";
-const message = "Настройки \n<code>Подтверждение правильности ввода: ВКЛ \nБексонечное добавление слов: ВЫКЛ</code> \n"
+const message = "Настройки \n<code>Подтверждение правильности ввода: ВКЛ \nБесконечное добавление слов: ВЫКЛ</code> \n"
 const extra = {
     parse_mode: 'HTML', reply_markup: {
         inline_keyboard: [

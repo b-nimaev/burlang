@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var telegraf_1 = require("telegraf");
-var message = "Настройки \n<code>Подтверждение правильности ввода: ВКЛ \nБексонечное добавление слов: ВЫКЛ</code> \n";
+var message = "Настройки \n<code>Подтверждение правильности ввода: ВКЛ \nБесконечное добавление слов: ВЫКЛ</code> \n";
 var extra = {
     parse_mode: 'HTML', reply_markup: {
         inline_keyboard: [

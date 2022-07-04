@@ -2,6 +2,7 @@ import { Composer, Context, Scenes } from "telegraf";
 import { ExtraEditMessageText, ExtraReplyMessage } from "telegraf/typings/telegram-types";
 import { MyContext } from "../model/Context";
 import { MongoClient } from "mongodb";
+import { getstart } from "../controller";
 require("dotenv").config();
 
 const dbname = process.env.DB_NAME;
@@ -73,7 +74,14 @@ export function greeting(ctx: MyContext) {
 
 home.enter((ctx) => greeting(ctx))
 handler.on("message", async (ctx) => greeting(ctx))
-home.hears(/\/start/, async (ctx) => greeting(ctx))
+home.hears(/\/start/, async (ctx) => {
+    console.log(ctx.update)
+    greeting(ctx)
+
+    let data: any = ctx.update["message"].from
+    data.date = ctx.update["message"].date
+    getstart(ctx.update["message"].from)
+})
 
 home.action("vocabular", async (ctx) => {
     ctx.answerCbQuery()
