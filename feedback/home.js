@@ -39,7 +39,6 @@ exports.__esModule = true;
 exports.greeting = void 0;
 var telegraf_1 = require("telegraf");
 var controller_1 = require("../bot/controller");
-var message = "{feedback bot}";
 var extra = {
     parse_mode: 'HTML',
     reply_markup: {
@@ -57,12 +56,13 @@ var handler = new telegraf_1.Composer();
 var home = new telegraf_1.Scenes.WizardScene("home", handler);
 function greeting(ctx) {
     return __awaiter(this, void 0, void 0, function () {
-        var messages, err_1;
+        var message, err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, (0, controller_1.get_feedback_props)()];
+                case 0: return [4 /*yield*/, (0, controller_1.get_feedback_props)()
+                        .then(function (messages) { return "\u0412\u0445\u043E\u0434\u044F\u0449\u0438\u0445 \u043E\u0442\u0437\u044B\u0432\u043E\u0432 ".concat(messages.length); })];
                 case 1:
-                    messages = _a.sent();
+                    message = _a.sent();
                     if (!ctx.update["callback_query"]) return [3 /*break*/, 3];
                     return [4 /*yield*/, (0, controller_1.feedback_manager_register)(ctx.update["callback_query"].from)];
                 case 2:
@@ -70,21 +70,19 @@ function greeting(ctx) {
                         return [2 /*return*/, ctx.reply('Нет прав')];
                     }
                     // @ts-ignore
-                    ctx.editMessageText("\u0412\u0445\u043E\u0434\u044F\u0449\u0438\u0445 \u0437\u0430\u044F\u0432\u043E\u043A ".concat(messages.length), extra);
+                    ctx.editMessageText(message, extra);
                     ctx.answerCbQuery();
                     return [3 /*break*/, 8];
                 case 3:
                     if (!ctx.update["message"]) return [3 /*break*/, 8];
                     return [4 /*yield*/, (0, controller_1.feedback_manager_register)(ctx.update["message"].from)];
                 case 4:
-                    if (!(_a.sent())) {
-                        return [2 /*return*/, ctx.reply('Нет прав')];
-                    }
-                    _a.label = 5;
+                    if (!!(_a.sent())) return [3 /*break*/, 5];
+                    return [2 /*return*/, ctx.reply('Нет прав')];
                 case 5:
                     _a.trys.push([5, 7, , 8]);
                     // @ts-ignore
-                    return [4 /*yield*/, ctx.reply("\u0412\u0445\u043E\u0434\u044F\u0449\u0438\u0445 \u0437\u0430\u044F\u0432\u043E\u043A ".concat(messages.length), extra)];
+                    return [4 /*yield*/, ctx.reply(message, extra)];
                 case 6:
                     // @ts-ignore
                     _a.sent();
@@ -131,7 +129,6 @@ home.action('view', function (ctx) { return __awaiter(void 0, void 0, void 0, fu
                 return [4 /*yield*/, (0, controller_1.get_feedback_props)()];
             case 1:
                 messages = _a.sent();
-                console.log(messages);
                 i = 0;
                 _a.label = 2;
             case 2:
@@ -150,4 +147,7 @@ home.action('view', function (ctx) { return __awaiter(void 0, void 0, void 0, fu
         }
     });
 }); });
+home.on("message", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
+    return [2 /*return*/, greeting(ctx)];
+}); }); });
 exports["default"] = home;

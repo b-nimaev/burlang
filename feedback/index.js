@@ -46,9 +46,9 @@ var https = require('https');
 var express = require("express");
 require("dotenv").config();
 var _a = telegraf_1.Scenes.Stage, enter = _a.enter, leave = _a.leave;
-var bot = new telegraf_1.Telegraf(process.env.BOT_TOKEN);
+var bot = new telegraf_1.Telegraf(process.env.BOT_TOKEN_FEEDBACK);
 var app = express();
-var port = 8443;
+var port = 1337;
 var stage = new telegraf_1.Scenes.Stage([home_1["default"]], {
     "default": 'home'
 });
@@ -62,52 +62,52 @@ bot.use(function (ctx, next) {
 });
 (function () {
     return __awaiter(this, void 0, void 0, function () {
-        var users, messages, i;
+        var users, message;
+        var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, (0, controller_1.get_feedback_managers)()];
                 case 1:
                     users = _a.sent();
-                    return [4 /*yield*/, (0, controller_1.get_feedback_props)()];
+                    return [4 /*yield*/, (0, controller_1.get_feedback_props)()
+                            .then(function (messages) { return "\u0412\u0445\u043E\u0434\u044F\u0449\u0438\u0445 \u043E\u0442\u0437\u044B\u0432\u043E\u0432 ".concat(messages.length); })];
                 case 2:
-                    messages = _a.sent();
-                    console.log(users[0]);
-                    i = 0;
-                    _a.label = 3;
-                case 3:
-                    if (!(i < users.length)) return [3 /*break*/, 7];
-                    return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 1000); })];
-                case 4:
-                    _a.sent();
-                    return [4 /*yield*/, bot.telegram.sendMessage(users[i].id, "\u0412\u0445\u043E\u0434\u044F\u0449\u0438\u0445 \u0437\u0430\u044F\u0432\u043E\u043A ".concat(messages.length), {
-                            parse_mode: 'HTML',
-                            reply_markup: {
-                                inline_keyboard: [
-                                    [
-                                        {
-                                            text: 'Начать просмотр',
-                                            callback_data: 'view'
-                                        }
-                                    ]
-                                ]
+                    message = _a.sent();
+                    users.forEach(function (element) { return __awaiter(_this, void 0, void 0, function () {
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 1000); })];
+                                case 1:
+                                    _a.sent();
+                                    return [4 /*yield*/, bot.telegram.sendMessage(element.id, message, {
+                                            parse_mode: 'HTML',
+                                            reply_markup: {
+                                                inline_keyboard: [
+                                                    [
+                                                        {
+                                                            text: 'Начать просмотр',
+                                                            callback_data: 'view'
+                                                        }
+                                                    ]
+                                                ]
+                                            }
+                                        })];
+                                case 2:
+                                    _a.sent();
+                                    return [2 /*return*/];
                             }
-                        })];
-                case 5:
-                    _a.sent();
-                    _a.label = 6;
-                case 6:
-                    i++;
-                    return [3 /*break*/, 3];
-                case 7: return [2 /*return*/];
+                        });
+                    }); });
+                    return [2 /*return*/];
             }
         });
     });
 }());
 // Backend
-var secretPath = "/telegraf/".concat(bot.secretPathComponent());
+var secretPath = "/feedback/".concat(bot.secretPathComponent());
 // console.log(secretPath)
 if (process.env.mode === "development") {
-    bot.telegram.setWebhook("https://74de-81-23-175-121.eu.ngrok.io".concat(secretPath))
+    bot.telegram.setWebhook("https://844a-81-23-175-121.eu.ngrok.io".concat(secretPath))
         .then(function (status) { return console.log('Webhook setted: ' + status); });
 }
 else {

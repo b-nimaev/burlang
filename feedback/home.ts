@@ -2,7 +2,6 @@ import { Composer, Scenes } from "telegraf";
 import { MyContext } from "../bot/model/Context";
 import { feedback_manager_register, get_feedback_managers, get_feedback_props, register_feedback_manager, write_feedback_prop } from "../bot/controller";
 
-const message = `{feedback bot}`
 const extra = {
     parse_mode: 'HTML',
     reply_markup: {
@@ -22,9 +21,11 @@ const home = new Scenes.WizardScene(
     handler,
 );
 
+
 export async function greeting(ctx: MyContext) {
 
-    let messages = await get_feedback_props()
+    const message = await get_feedback_props()
+        .then(messages => { return `Входящих отзывов ${messages.length}` })
 
     if (ctx.update["callback_query"]) {
 
@@ -33,20 +34,20 @@ export async function greeting(ctx: MyContext) {
         }
 
         // @ts-ignore
-        ctx.editMessageText(`Входящих заявок ${messages.length}`, extra)
+        ctx.editMessageText(message, extra)
         ctx.answerCbQuery()
 
     } else if (ctx.update["message"]) {
 
         if (!await feedback_manager_register(ctx.update["message"].from)) {
             return ctx.reply('Нет прав')
-        }
-
-        try {
-            // @ts-ignore
-            await ctx.reply(`Входящих заявок ${messages.length}`, extra)
-        } catch (err) {
-            ctx.reply('Попробуйте снова')
+        } else {
+            try {
+                // @ts-ignore
+                await ctx.reply(message, extra)
+            } catch (err) {
+                ctx.reply('Попробуйте снова')
+            }
         }
     }
 }
@@ -64,15 +65,16 @@ home.hears(/\/register/, async (ctx) => {
 })
 
 home.action('view', async (ctx) => {
+
     ctx.answerCbQuery()
+    const messages = await get_feedback_props()
 
-    let messages = await get_feedback_props()
-
-    console.log(messages)
     for (let i = 0; i < messages.length; i++) {
         await new Promise(resolve => setTimeout(resolve, 1000))
         await ctx.telegram.copyMessage(ctx.update["callback_query"].from.id, messages[i].chat.id, messages[i].message_id)
     }
 })
+
+home.on("message", async (ctx) => greeting(ctx))
 
 export default home

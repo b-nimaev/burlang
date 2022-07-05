@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { Scenes, session, Telegraf, Context, Composer, Telegram } from 'telegraf'
+import { User } from 'telegraf/typings/core/types/typegram';
 import { get_feedback_managers, get_feedback_props } from '../bot/controller';
 
 import { MyContext } from '../bot/model/Context'
@@ -33,11 +34,13 @@ bot.use((ctx, next) => {
 (async function () {
 
     let users = await get_feedback_managers()
-    let messages = await get_feedback_props()
-    console.log(users[0])
-    for (let i = 0; i < users.length; i++) {
+    const message = await get_feedback_props()
+        .then(messages => { return `Входящих отзывов ${messages.length}` })
+
+
+    users.forEach(async (element: User) => {
         await new Promise(resolve => setTimeout(resolve, 1000))
-        await bot.telegram.sendMessage(users[i].id, `Входящих заявок ${messages.length}`, {
+        await bot.telegram.sendMessage(element.id, message, {
             parse_mode: 'HTML',
             reply_markup: {
                 inline_keyboard: [
@@ -49,15 +52,16 @@ bot.use((ctx, next) => {
                     ]
                 ]
             }
-        })
-    }
+        })  
+    });
+
 }())
 
 // Backend
 const secretPath = `/feedback/${bot.secretPathComponent()}`
 // console.log(secretPath)
 if (process.env.mode === "development") {
-    bot.telegram.setWebhook(`https://74de-81-23-175-121.eu.ngrok.io${secretPath}`)
+    bot.telegram.setWebhook(`https://844a-81-23-175-121.eu.ngrok.io${secretPath}`)
         .then((status) => console.log('Webhook setted: ' + status))
 } else {
     bot.telegram.setWebhook(`https://say-an.ru${secretPath}`)
