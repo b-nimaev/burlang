@@ -36,15 +36,61 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.get_feedback_props = exports.write_feedback_prop = exports.get_feedback_managers = exports.register_feedback_manager = exports.feedback_manager_register = exports.getstart = void 0;
+exports.get_feedback_props = exports.write_feedback_prop = exports.get_feedback_managers = exports.register_feedback_manager = exports.feedback_manager_register = exports.getstart = exports.setWord = void 0;
 var mongodb_1 = require("mongodb");
 require("dotenv").config();
 var dbname = process.env.DB_NAME;
 var uri = process.env.DB_CONN_STRING;
 var client = new mongodb_1.MongoClient(uri);
+var setWord = function (update) {
+    return __awaiter(this, void 0, void 0, function () {
+        var word, err_1;
+        var _this = this;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    word = update["message"].text.toLowerCase();
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 4, , 5]);
+                    return [4 /*yield*/, client.connect()];
+                case 2:
+                    _a.sent();
+                    return [4 /*yield*/, client.db(dbname)
+                            .collection("vocabular")
+                            .findOne({ name: word })
+                            .then(function (result) { return __awaiter(_this, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                // Если документ найден
+                                if (result) {
+                                    if (result.translte) {
+                                        return [2 /*return*/, 'is exists'];
+                                    }
+                                    else {
+                                        return [2 /*return*/, 'continue'];
+                                    }
+                                }
+                                // Если пользователь впервые открыл бот
+                                else {
+                                    return [2 /*return*/, 'none'];
+                                }
+                                return [2 /*return*/];
+                            });
+                        }); })];
+                case 3: return [2 /*return*/, _a.sent()];
+                case 4:
+                    err_1 = _a.sent();
+                    console.log(err_1);
+                    return [2 /*return*/, false];
+                case 5: return [2 /*return*/];
+            }
+        });
+    });
+};
+exports.setWord = setWord;
 var getstart = function (update) {
     return __awaiter(this, void 0, void 0, function () {
-        var err_1;
+        var err_2;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -91,8 +137,8 @@ var getstart = function (update) {
                     _a.sent();
                     return [3 /*break*/, 4];
                 case 3:
-                    err_1 = _a.sent();
-                    console.log(err_1);
+                    err_2 = _a.sent();
+                    console.log(err_2);
                     return [2 /*return*/, false];
                 case 4: return [2 /*return*/];
             }
@@ -102,7 +148,7 @@ var getstart = function (update) {
 exports.getstart = getstart;
 var feedback_manager_register = function (update) {
     return __awaiter(this, void 0, void 0, function () {
-        var err_2;
+        var err_3;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -128,8 +174,8 @@ var feedback_manager_register = function (update) {
                         })];
                 case 2: return [2 /*return*/, _a.sent()];
                 case 3:
-                    err_2 = _a.sent();
-                    console.log(err_2);
+                    err_3 = _a.sent();
+                    console.log(err_3);
                     return [3 /*break*/, 4];
                 case 4: return [2 /*return*/];
             }
@@ -139,7 +185,7 @@ var feedback_manager_register = function (update) {
 exports.feedback_manager_register = feedback_manager_register;
 var register_feedback_manager = function (update) {
     return __awaiter(this, void 0, void 0, function () {
-        var err_3;
+        var err_4;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -160,8 +206,8 @@ var register_feedback_manager = function (update) {
                         })];
                 case 2: return [2 /*return*/, _a.sent()];
                 case 3:
-                    err_3 = _a.sent();
-                    return [2 /*return*/, err_3];
+                    err_4 = _a.sent();
+                    return [2 /*return*/, err_4];
                 case 4: return [2 /*return*/];
             }
         });
@@ -170,7 +216,7 @@ var register_feedback_manager = function (update) {
 exports.register_feedback_manager = register_feedback_manager;
 var get_feedback_managers = function () {
     return __awaiter(this, void 0, void 0, function () {
-        var res, err_4;
+        var res, err_5;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -189,8 +235,8 @@ var get_feedback_managers = function () {
                     console.log(res);
                     return [2 /*return*/, res];
                 case 3:
-                    err_4 = _a.sent();
-                    return [2 /*return*/, err_4];
+                    err_5 = _a.sent();
+                    return [2 /*return*/, err_5];
                 case 4: return [2 /*return*/];
             }
         });
@@ -199,7 +245,7 @@ var get_feedback_managers = function () {
 exports.get_feedback_managers = get_feedback_managers;
 var write_feedback_prop = function (update) {
     return __awaiter(this, void 0, void 0, function () {
-        var res, err_5;
+        var res, err_6;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -214,8 +260,8 @@ var write_feedback_prop = function (update) {
                     res = _a.sent();
                     return [2 /*return*/, res];
                 case 3:
-                    err_5 = _a.sent();
-                    return [2 /*return*/, err_5];
+                    err_6 = _a.sent();
+                    return [2 /*return*/, err_6];
                 case 4: return [2 /*return*/];
             }
         });
@@ -224,7 +270,7 @@ var write_feedback_prop = function (update) {
 exports.write_feedback_prop = write_feedback_prop;
 var get_feedback_props = function () {
     return __awaiter(this, void 0, void 0, function () {
-        var res, err_6;
+        var res, err_7;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -240,8 +286,8 @@ var get_feedback_props = function () {
                     res = _a.sent();
                     return [2 /*return*/, res];
                 case 3:
-                    err_6 = _a.sent();
-                    return [2 /*return*/, err_6];
+                    err_7 = _a.sent();
+                    return [2 /*return*/, err_7];
                 case 4: return [2 /*return*/];
             }
         });

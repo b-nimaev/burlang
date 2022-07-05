@@ -6,6 +6,53 @@ const dbname = process.env.DB_NAME;
 let uri = <string>process.env.DB_CONN_STRING;
 const client = new MongoClient(uri);
 
+export const setWord = async function (update) {
+
+    let word = update["message"].text.toLowerCase()
+
+    try {
+        await client.connect()
+        return await client.db(dbname)
+            .collection("vocabular")
+            .findOne({ name: word })
+            .then(async (result) => {
+
+                // Если документ найден
+                if (result) {
+                    if (result.translte) {
+                        const data =  {
+                            status: 'exists',
+                            words: result.translate
+                        }
+
+                        return data
+                    } else {
+                        return await client.db(dbname)
+                            .collection("vacabular")
+                            .insertOne({ name: word })
+                            .then((doc) => {
+                                return 'added'
+                            })
+                    }
+                }
+
+                // Если пользователь впервые открыл бот
+                else {
+                    return await client.db(dbname)
+                        .collection("vacabular")
+                        .insertOne({ name: word })
+                        .then((doc) => {
+                            return 'added'
+                        })
+                }
+
+            })
+    } catch (err) {
+        console.log(err)
+        return false
+    }
+}
+
 export const getstart = async function (update) {
     try {
         await client.connect()

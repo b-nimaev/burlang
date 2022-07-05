@@ -1,5 +1,7 @@
 import { Composer, Scenes } from "telegraf";
 import { MyContext } from "../model/Context";
+require("dotenv").config()
+
 const message = "Личный кабинет"
 const extra = {
     parse_mode: 'HTML', reply_markup: {
@@ -34,7 +36,19 @@ const dashboard = new Scenes.WizardScene(
     handler,
     (async (ctx) => {
         if (ctx.update["message"]) {
-            console.log(ctx.update)
+            if (ctx.update["message"]) {
+                try {
+                    ctx.forwardMessage(process.env.channel_id).then(async () => {
+                        await ctx.reply("Спасибо за обратную связь! \nВаше сообщение получено")
+                        ctx.scene.enter("home")
+                    })
+                } catch (err) {
+                    ctx.copyMessage(process.env.channel_id).then(async () => {
+                        await ctx.reply("Спасибо за обратную связь! \nВаше сообщение получено")
+                        ctx.scene.enter("home")
+                    })
+                }
+            }
         }
     })
 );

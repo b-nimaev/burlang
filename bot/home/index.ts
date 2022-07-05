@@ -56,6 +56,7 @@ let message = `Самоучитель бурятского языка.\n\n Вы�
 const handler = new Composer<MyContext>();
 const vocabular = new Composer<MyContext>();
 const study = new Composer<MyContext>();
+const blitz = new Composer<MyContext>();
 const home = new Scenes.WizardScene(
     "home",
     handler,
@@ -73,7 +74,10 @@ export function greeting(ctx: MyContext) {
 }
 
 home.enter((ctx) => greeting(ctx))
-handler.on("message", async (ctx) => greeting(ctx))
+handler.on("message", async (ctx) => {
+    greeting(ctx)
+})
+
 home.hears(/\/start/, async (ctx) => {
     console.log(ctx.update)
     greeting(ctx)
@@ -122,5 +126,7 @@ home.action("study", async (ctx) => {
         }
     })
 })
-
+home.command("blitz", async (ctx) => {
+    ctx.scene.enter("blitz")
+})
 export default home

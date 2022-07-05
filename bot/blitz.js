@@ -37,15 +37,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var telegraf_1 = require("telegraf");
+var controller_1 = require("./controller");
 require("dotenv").config();
-var message = "Личный кабинет";
+var message = "Блиц добавление слов";
 var extra = {
     parse_mode: 'HTML', reply_markup: {
         inline_keyboard: [
             [
                 {
-                    text: 'Обратная связь',
-                    callback_data: 'contact'
+                    text: 'Начать',
+                    callback_data: 'start'
                 },
                 {
                     text: 'На главную',
@@ -66,69 +67,65 @@ function greeting(ctx) {
     }
 }
 var handler = new telegraf_1.Composer();
-var dashboard = new telegraf_1.Scenes.WizardScene("dashboard", handler, (function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+var blitz = new telegraf_1.Scenes.WizardScene("blitz", handler, (function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+    var err_1;
     return __generator(this, function (_a) {
-        if (ctx.update["message"]) {
-            if (ctx.update["message"]) {
-                try {
-                    ctx.forwardMessage(process.env.channel_id).then(function () { return __awaiter(void 0, void 0, void 0, function () {
+        switch (_a.label) {
+            case 0:
+                if (!ctx.update["message"]) return [3 /*break*/, 5];
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 5]);
+                return [4 /*yield*/, (0, controller_1.setWord)(ctx.update).then(function (res) { return __awaiter(void 0, void 0, void 0, function () {
                         return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0: return [4 /*yield*/, ctx.reply("Спасибо за обратную связь! \nВаше сообщение получено")];
-                                case 1:
-                                    _a.sent();
-                                    ctx.scene.enter("home");
-                                    return [2 /*return*/];
-                            }
+                            ctx.reply("".concat(res));
+                            return [2 /*return*/];
                         });
-                    }); });
-                }
-                catch (err) {
-                    ctx.copyMessage(process.env.channel_id).then(function () { return __awaiter(void 0, void 0, void 0, function () {
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0: return [4 /*yield*/, ctx.reply("Спасибо за обратную связь! \nВаше сообщение получено")];
-                                case 1:
-                                    _a.sent();
-                                    ctx.scene.enter("home");
-                                    return [2 /*return*/];
-                            }
-                        });
-                    }); });
-                }
-            }
+                    }); })];
+            case 2:
+                _a.sent();
+                return [3 /*break*/, 5];
+            case 3:
+                err_1 = _a.sent();
+                return [4 /*yield*/, ctx.reply("Возникла ошибка, попробуйте снова")];
+            case 4:
+                _a.sent();
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
         }
-        return [2 /*return*/];
     });
 }); }));
 handler.on("message", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     return [2 /*return*/, greeting(ctx)];
 }); }); });
-dashboard.command("vocabular", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
+blitz.command("vocabular", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     return [2 /*return*/, ctx.scene.enter("vocabular")];
 }); }); });
-dashboard.command("study", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
+blitz.command("study", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     return [2 /*return*/, ctx.scene.enter("study")];
 }); }); });
-dashboard.command("home", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
+blitz.command("home", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     return [2 /*return*/, ctx.scene.enter("home")];
 }); }); });
-dashboard.enter(function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
+blitz.command("dashboard", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
+    return [2 /*return*/, ctx.scene.enter("dashboard")];
+}); }); });
+blitz.enter(function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     return [2 /*return*/, greeting(ctx)];
 }); }); });
-dashboard.action("home", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+blitz.action("home", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         ctx.answerCbQuery();
         ctx.scene.enter("home");
         return [2 /*return*/];
     });
 }); });
-dashboard.action("contact", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+blitz.action("start", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         ctx.answerCbQuery();
         ctx.wizard.next();
-        ctx.editMessageText("Отправьте сообщение, администрация ответит в ближайшее время");
+        ctx.editMessageText("Начинайте!");
         return [2 /*return*/];
     });
 }); });
-exports["default"] = dashboard;
+exports["default"] = blitz;

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { Scenes, session, Telegraf, Context, Composer } from 'telegraf'
+import blitz from './bot/blitz';
 import dashboard from './bot/dashboard';
 import home, { greeting } from './bot/home'
 import { MyContext } from "./bot/model/Context"
@@ -20,7 +21,7 @@ const bot = new Telegraf<MyContext>(<string>process.env.BOT_TOKEN)
 const app = express()
 const port = 8443
 
-const stage = new Scenes.Stage<MyContext>([home, vocabular, dashboard, study, vocabularSettings], {
+const stage = new Scenes.Stage<MyContext>([home, vocabular, dashboard, study, vocabularSettings, blitz], {
     default: 'home'
 })
 
@@ -31,12 +32,11 @@ bot.use((ctx, next) => {
     ctx.myProp = ctx.chat?.first_name
     return next()
 })
-
 // Backend
 const secretPath = `/telegraf/${bot.secretPathComponent()}`
 // console.log(secretPath)
 if (process.env.mode === "development") {
-    bot.telegram.setWebhook(`https://8f48-81-23-175-121.eu.ngrok.io${secretPath}`)
+    bot.telegram.setWebhook(`https://d4f7-81-23-175-121.eu.ngrok.io${secretPath}`)
         .then((status) => console.log('Webhook setted: ' + status))
 } else {
     bot.telegram.setWebhook(`https://say-an.ru${secretPath}`)

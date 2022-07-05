@@ -106,6 +106,7 @@ var message = "\u0421\u0430\u043C\u043E\u0443\u0447\u0438\u0442\u0435\u043B\u044
 var handler = new telegraf_1.Composer();
 var vocabular = new telegraf_1.Composer();
 var study = new telegraf_1.Composer();
+var blitz = new telegraf_1.Composer();
 var home = new telegraf_1.Scenes.WizardScene("home", handler, vocabular, study);
 function greeting(ctx) {
     if (ctx.message) {
@@ -118,9 +119,12 @@ function greeting(ctx) {
 }
 exports.greeting = greeting;
 home.enter(function (ctx) { return greeting(ctx); });
-handler.on("message", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/, greeting(ctx)];
-}); }); });
+handler.on("message", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        greeting(ctx);
+        return [2 /*return*/];
+    });
+}); });
 home.hears(/\/start/, function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
     var data;
     return __generator(this, function (_a) {
@@ -184,6 +188,12 @@ home.action("study", function (ctx) { return __awaiter(void 0, void 0, void 0, f
                 ]
             }
         });
+        return [2 /*return*/];
+    });
+}); });
+home.command("blitz", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        ctx.scene.enter("blitz");
         return [2 /*return*/];
     });
 }); });
