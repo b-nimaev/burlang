@@ -21,6 +21,19 @@ const extra = {
     }
 }
 
+const exists_words = {
+    parse_mode: 'HTML', reply_markup: {
+        inline_keyboard: [
+            [
+                {
+                    text: 'Дополнить',
+                    callback_data: 'supplement'
+                }
+            ],
+        ]
+    }
+}
+
 function greeting(ctx: MyContext) {
     if (ctx.update["callback_query"]) {
         // @ts-ignore
@@ -41,19 +54,30 @@ const blitz = new Scenes.WizardScene(
             try {
                 await setWord(ctx.update).then(async (res) => {
 
-                    if (res == 'is exists') {
-                        await ctx.reply(`Слово содержит перевод ${translate}`)
-                        ctx.wizard.next()
+                    if (typeof (res) == 'object') {
+                        if (res.status == 'exists') {
+
+                            let words: string = ``
+                            let length = res.words.length
+
+                            res.words.forEach((element, index) => {
+                                
+                                if (index !== length) {
+                                    words += ', '
+                                }
+                                
+                                words += element
+
+                            });
+
+                            return await ctx.reply(`Есть перевод на слово <b>${translate}</b> \n ${words}`, exists_words)
+                        }
                     }
 
                     if (res == 'added') {
                         await ctx.reply(`<b>${translate}</b> добавлен, теперь отправьте перевод`)
                         ctx.wizard.next()
                     }
-
-
-
-                    ctx.reply(`${res}`)
                 })
             } catch (err) {
                 await ctx.reply("Возникла ошибка, попробуйте снова")
@@ -78,6 +102,9 @@ blitz.action("start", async (ctx) => {
     ctx.answerCbQuery()
     ctx.wizard.next()
     ctx.editMessageText("Начинайте!")
+})
+blitz.action("supplement", async (ctx) => {
+    
 })
 
 export default blitz
