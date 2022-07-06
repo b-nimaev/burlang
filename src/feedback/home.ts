@@ -1,6 +1,6 @@
 import { Composer, Scenes } from "telegraf";
 import { MyContext } from "../bot/Model";
-import { feedback_manager_register, get_feedback_managers, get_feedback_props, register_feedback_manager, write_feedback_prop } from "../bot/Controller";
+import { feedback_manager_register, get_feedback_managers, get_feedback_props, register_feedback_manager, write_feedback_prop } from "../bot/Controller/Controller";
 
 const extra = {
     parse_mode: 'HTML',

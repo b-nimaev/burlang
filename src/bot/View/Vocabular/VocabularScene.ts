@@ -1,5 +1,5 @@
 import { Composer, Scenes } from "telegraf";
-import { getTranslatedVocabular } from "../../Controller";
+import { getTranslatedVocabular } from "../../Controller/Controller";
 import { MyContext } from "../../Model";
 
 async function getVocabular() {
