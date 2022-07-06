@@ -32,7 +32,7 @@ bot.use(function (ctx, next) {
 var secretPath = "/telegraf/".concat(bot.secretPathComponent());
 // console.log(secretPath)
 if (process.env.mode === "development") {
-    bot.telegram.setWebhook("https://d4f7-81-23-175-121.eu.ngrok.io".concat(secretPath))
+    bot.telegram.setWebhook("https://0f0b-81-23-175-121.eu.ngrok.io".concat(secretPath))
         .then(function (status) { return console.log('Webhook setted: ' + status); });
 }
 else {

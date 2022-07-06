@@ -37,7 +37,24 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var telegraf_1 = require("telegraf");
-var message = "Словарь \n<code>Найдено значений: 49</code> \n";
+var controller_1 = require("../controller");
+function getVocabular() {
+    return __awaiter(this, void 0, void 0, function () {
+        var res, message;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, (0, controller_1.getTranslatedVocabular)()];
+                case 1:
+                    res = _a.sent();
+                    message = "Словарь \n<code>Найдено значений: 49</code> \n";
+                    if (!res) {
+                        return [2 /*return*/, false];
+                    }
+                    return [2 /*return*/, "\u0421\u043B\u043E\u0432\u0430\u0440\u044C \n<code>\u041D\u0430\u0439\u0434\u0435\u043D\u043E \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0439: ".concat(res.length, "</code>")];
+            }
+        });
+    });
+}
 var extra = {
     parse_mode: 'HTML', reply_markup: {
         inline_keyboard: [
@@ -61,14 +78,31 @@ var extra = {
     }
 };
 function greeting(ctx) {
-    if (ctx.message) {
-        // @ts-ignore
-        ctx.reply(message, extra);
-    }
-    else {
-        // @ts-ignore
-        ctx.editMessageText(message, extra);
-    }
+    return __awaiter(this, void 0, void 0, function () {
+        var message;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, getVocabular()];
+                case 1:
+                    message = _a.sent();
+                    if (message) {
+                        if (ctx.message) {
+                            // @ts-ignore
+                            ctx.reply(message, extra);
+                        }
+                        else {
+                            // @ts-ignore
+                            ctx.editMessageText(message, extra);
+                        }
+                    }
+                    else {
+                        ctx.reply("Возникла ошибка, повторите ещё раз");
+                        ctx.scene.enter("home");
+                    }
+                    return [2 /*return*/];
+            }
+        });
+    });
 }
 var handler = new telegraf_1.Composer();
 var vocabular = new telegraf_1.Scenes.WizardScene("vocabular", handler, (function (ctx) { return __awaiter(void 0, void 0, void 0, function () {

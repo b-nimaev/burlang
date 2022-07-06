@@ -56,6 +56,18 @@ var extra = {
         ]
     }
 };
+var exists_words = {
+    parse_mode: 'HTML', reply_markup: {
+        inline_keyboard: [
+            [
+                {
+                    text: 'Дополнить',
+                    callback_data: 'supplement'
+                }
+            ],
+        ]
+    }
+};
 function greeting(ctx) {
     if (ctx.update["callback_query"]) {
         // @ts-ignore
@@ -68,18 +80,46 @@ function greeting(ctx) {
 }
 var handler = new telegraf_1.Composer();
 var blitz = new telegraf_1.Scenes.WizardScene("blitz", handler, (function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
-    var err_1;
+    var translate_1, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 if (!ctx.update["message"]) return [3 /*break*/, 5];
+                translate_1 = ctx.update["message"].text;
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 5]);
                 return [4 /*yield*/, (0, controller_1.setWord)(ctx.update).then(function (res) { return __awaiter(void 0, void 0, void 0, function () {
+                        var words_1, length_1;
                         return __generator(this, function (_a) {
-                            ctx.reply("".concat(res));
-                            return [2 /*return*/];
+                            switch (_a.label) {
+                                case 0:
+                                    if (!(typeof (res) == 'object')) return [3 /*break*/, 2];
+                                    if (!(res.status == 'exists')) return [3 /*break*/, 2];
+                                    words_1 = "";
+                                    length_1 = res.words.length;
+                                    res.words.forEach(function (element, index) {
+                                        if (index !== length_1) {
+                                            words_1 += ', ';
+                                        }
+                                        words_1 += element;
+                                    });
+                                    return [4 /*yield*/, ctx.reply("\u0415\u0441\u0442\u044C \u043F\u0435\u0440\u0435\u0432\u043E\u0434 \u043D\u0430 \u0441\u043B\u043E\u0432\u043E <b>".concat(translate_1, "</b> \n ").concat(words_1), exists_words)];
+                                case 1: 
+                                // @ts-ignore
+                                return [2 /*return*/, _a.sent()];
+                                case 2:
+                                    if (!(res == 'added')) return [3 /*break*/, 4];
+                                    ctx.scene.session.word = translate_1;
+                                    return [4 /*yield*/, ctx.reply("<b>".concat(translate_1, "</b> \u0434\u043E\u0431\u0430\u0432\u043B\u0435\u043D, \u0442\u0435\u043F\u0435\u0440\u044C \u043E\u0442\u043F\u0440\u0430\u0432\u044C\u0442\u0435 \u043F\u0435\u0440\u0435\u0432\u043E\u0434"), {
+                                            parse_mode: 'HTML'
+                                        })];
+                                case 3:
+                                    _a.sent();
+                                    ctx.wizard.next();
+                                    _a.label = 4;
+                                case 4: return [2 /*return*/];
+                            }
                         });
                     }); })];
             case 2:
@@ -92,6 +132,51 @@ var blitz = new telegraf_1.Scenes.WizardScene("blitz", handler, (function (ctx) 
                 _a.sent();
                 return [3 /*break*/, 5];
             case 5: return [2 /*return*/];
+        }
+    });
+}); }), (function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+    var translate, err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!ctx.update["message"]) return [3 /*break*/, 6];
+                translate = ctx.update["message"].text;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 4, , 6]);
+                return [4 /*yield*/, (0, controller_1.setTranslate)(ctx.update["message"], ctx.scene.session.word)];
+            case 2:
+                _a.sent();
+                return [4 /*yield*/, ctx.reply("\"".concat(translate, "\" \u0414\u043E\u0431\u0430\u0432\u043B\u0435\u043D \u043A \u043F\u0435\u0440\u0435\u0432\u043E\u0434\u0443, \n\u0412\u044B \u043C\u043E\u0436\u0435\u0442\u0435 \u043E\u0442\u043F\u0440\u0430\u0432\u0438\u0442\u044C \u0435\u0449\u0451"), {
+                        parse_mode: 'HTML',
+                        reply_markup: {
+                            inline_keyboard: [
+                                [
+                                    {
+                                        text: 'Выбрать другое слово',
+                                        callback_data: 'cancel'
+                                    }
+                                ],
+                            ]
+                        }
+                    })];
+            case 3:
+                _a.sent();
+                return [3 /*break*/, 6];
+            case 4:
+                err_2 = _a.sent();
+                return [4 /*yield*/, ctx.reply("Возникла ошибка, попробуйте ещё раз, или вернитесь назад /back")];
+            case 5:
+                _a.sent();
+                return [3 /*break*/, 6];
+            case 6:
+                if (ctx.update["callback_query"]) {
+                    if (ctx.update["callback_query"].data == 'cancel') {
+                        greeting(ctx);
+                        ctx.wizard.selectStep(0);
+                    }
+                }
+                return [2 /*return*/];
         }
     });
 }); }));
@@ -125,6 +210,13 @@ blitz.action("start", function (ctx) { return __awaiter(void 0, void 0, void 0, 
         ctx.answerCbQuery();
         ctx.wizard.next();
         ctx.editMessageText("Начинайте!");
+        return [2 /*return*/];
+    });
+}); });
+blitz.action("supplement", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        ctx.answerCbQuery();
+        ctx.wizard.next();
         return [2 /*return*/];
     });
 }); });

@@ -6,6 +6,18 @@ const dbname = process.env.DB_NAME;
 let uri = <string>process.env.DB_CONN_STRING;
 const client = new MongoClient(uri);
 
+export const getTranslatedVocabular = async function () {
+    try {
+        await client.connect()
+        return await client.db(dbname)
+            .collection("vocabular")
+            .find()
+            .toArray()
+    } catch (err) {
+        return false
+    }
+}
+
 export const setWord = async function (update) {
 
     let word = update["message"].text.toLowerCase()
@@ -28,7 +40,7 @@ export const setWord = async function (update) {
                         return data
                     } else {
                         return await client.db(dbname)
-                            .collection("vacabular")
+                            .collection("vocabular")
                             .insertOne({ name: word })
                             .then((doc) => {
                                 return 'added'
@@ -39,7 +51,7 @@ export const setWord = async function (update) {
                 // Если пользователь впервые открыл бот
                 else {
                     return await client.db(dbname)
-                        .collection("vacabular")
+                        .collection("vocabular")
                         .insertOne({ name: word })
                         .then((doc) => {
                             return 'added'
@@ -50,6 +62,26 @@ export const setWord = async function (update) {
     } catch (err) {
         console.log(err)
         return false
+    }
+}
+
+export const setTranslate = async function (update, translate) {
+    try {
+        await client.connect()
+        return await client.db(dbname)
+            .collection("vocabular")
+            .updateOne({
+                name: translate
+            }, {
+                $push: {
+                    translate: update.text
+                }
+            }, {
+                upsert: true
+            })
+
+    } catch (err) {
+        return err
     }
 }
 

@@ -1,6 +1,17 @@
 import { Composer, Scenes } from "telegraf";
+import { getTranslatedVocabular } from "../controller";
 import { MyContext } from "../model/Context";
-const message = "Словарь \n<code>Найдено значений: 49</code> \n"
+
+async function getVocabular() {
+    const res = await getTranslatedVocabular()
+    const message = "Словарь \n<code>Найдено значений: 49</code> \n"
+    if (!res) {
+        return false
+    }
+
+    return `Словарь \n<code>Найдено значений: ${res.length}</code>`
+}
+
 const extra = {
     parse_mode: 'HTML', reply_markup: {
         inline_keyboard: [
@@ -23,13 +34,21 @@ const extra = {
         ]
     }
 }
-function greeting(ctx: MyContext) {
-    if (ctx.message) {
-        // @ts-ignore
-        ctx.reply(message, extra)
+
+async function greeting(ctx: MyContext) {
+
+    const message = await getVocabular()
+    if (message) {
+        if (ctx.message) {
+            // @ts-ignore
+            ctx.reply(message, extra)
+        } else {
+            // @ts-ignore
+            ctx.editMessageText(message, extra)
+        }
     } else {
-        // @ts-ignore
-        ctx.editMessageText(message, extra)
+        ctx.reply("Возникла ошибка, повторите ещё раз")
+        ctx.scene.enter("home")
     }
 }
 

@@ -1,5 +1,5 @@
 import { Composer, Scenes } from "telegraf";
-import { setWord } from "./controller";
+import { setTranslate, setWord } from "./controller";
 import { MyContext } from "./model/Context";
 require("dotenv").config()
 
@@ -70,17 +70,52 @@ const blitz = new Scenes.WizardScene(
 
                             });
 
+                            // @ts-ignore
                             return await ctx.reply(`Есть перевод на слово <b>${translate}</b> \n ${words}`, exists_words)
                         }
                     }
 
                     if (res == 'added') {
-                        await ctx.reply(`<b>${translate}</b> добавлен, теперь отправьте перевод`)
+                        ctx.scene.session.word = translate;
+                        await ctx.reply(`<b>${translate}</b> добавлен, теперь отправьте перевод`, {
+                            parse_mode: 'HTML'
+                        })
                         ctx.wizard.next()
                     }
                 })
             } catch (err) {
                 await ctx.reply("Возникла ошибка, попробуйте снова")
+            }
+        }
+    }),
+    (async (ctx) => {
+        if (ctx.update["message"]) {
+            const translate = ctx.update["message"].text
+            try {
+                await setTranslate(ctx.update["message"], ctx.scene.session.word)
+                await ctx.reply(`"${translate}" Добавлен к переводу, \nВы можете отправить ещё`, {
+                    parse_mode: 'HTML',
+                    reply_markup: {
+                        inline_keyboard: [
+                            [
+                                {
+                                    text: 'Выбрать другое слово',
+                                    callback_data: 'cancel'
+                                }
+                            ],
+                        ]
+                    }
+
+                })
+            } catch (err) {
+                await ctx.reply("Возникла ошибка, попробуйте ещё раз, или вернитесь назад /back")
+            }
+        }
+
+        if (ctx.update["callback_query"]) {
+            if (ctx.update["callback_query"].data == 'cancel') {
+                greeting(ctx)
+                ctx.wizard.selectStep(0)
             }
         }
     })
@@ -104,7 +139,8 @@ blitz.action("start", async (ctx) => {
     ctx.editMessageText("Начинайте!")
 })
 blitz.action("supplement", async (ctx) => {
-    
+    ctx.answerCbQuery()
+    ctx.wizard.next()
 })
 
 export default blitz

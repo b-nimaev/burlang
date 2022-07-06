@@ -36,48 +36,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.greeting = exports.getProposals = void 0;
+exports.greeting = void 0;
 var telegraf_1 = require("telegraf");
-var mongodb_1 = require("mongodb");
-var controller_1 = require("../controller");
 require("dotenv").config();
-var dbname = process.env.DB_NAME;
-var uri = process.env.DB_CONN_STRING;
-var client = new mongodb_1.MongoClient(uri);
-function getProposals() {
-    return __awaiter(this, void 0, void 0, function () {
-        var result, err_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 3, 4, 6]);
-                    return [4 /*yield*/, client.connect()];
-                case 1:
-                    _a.sent();
-                    return [4 /*yield*/, client.db(dbname).collection("users").find().toArray()];
-                case 2:
-                    result = _a.sent();
-                    if (result == null) {
-                        return [2 /*return*/, 0];
-                    }
-                    else {
-                        return [2 /*return*/, result];
-                    }
-                    return [3 /*break*/, 6];
-                case 3:
-                    err_1 = _a.sent();
-                    console.log(err_1);
-                    return [3 /*break*/, 6];
-                case 4: return [4 /*yield*/, client.close()];
-                case 5:
-                    _a.sent();
-                    return [7 /*endfinally*/];
-                case 6: return [2 /*return*/];
-            }
-        });
-    });
-}
-exports.getProposals = getProposals;
+var scenes = {
+    fields: ["study", "vocabular", "translater", "dashboard", "home", "blitz"]
+};
 var extra = {
     parse_mode: 'HTML',
     reply_markup: {
@@ -86,115 +50,43 @@ var extra = {
                 { text: "Самоучитель", callback_data: "study" },
                 { text: "Словарь", callback_data: "vocabular" }
             ],
-            [{ text: "Личный кабинет", callback_data: "dashboard" }]
-        ]
-    }
-};
-var __extra = {
-    parse_mode: 'HTML',
-    reply_markup: {
-        inline_keyboard: [
-            [
-                { text: "Самоучитель", callback_data: "study" },
-                { text: "Словарь", callback_data: "vocabular" }
-            ],
+            [{ text: 'Переводчик', callback_data: 'translater' }],
             [{ text: "Личный кабинет", callback_data: "dashboard" }]
         ]
     }
 };
 var message = "\u0421\u0430\u043C\u043E\u0443\u0447\u0438\u0442\u0435\u043B\u044C \u0431\u0443\u0440\u044F\u0442\u0441\u043A\u043E\u0433\u043E \u044F\u0437\u044B\u043A\u0430.\n\n \u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u043D\u0443\u0436\u043D\u044B\u0439 \u0440\u0430\u0437\u0434\u0435\u043B, \u0447\u0442\u043E\u0431\u044B \u043D\u0430\u0447\u0430\u0442\u044C \u0438\u0437\u0443\u0447\u0435\u043D\u0438\u0435 \uD83D\uDC47";
 var handler = new telegraf_1.Composer();
-var vocabular = new telegraf_1.Composer();
-var study = new telegraf_1.Composer();
-var blitz = new telegraf_1.Composer();
-var home = new telegraf_1.Scenes.WizardScene("home", handler, vocabular, study);
+var home = new telegraf_1.Scenes.WizardScene("home", handler);
 function greeting(ctx) {
-    if (ctx.message) {
-        ctx.reply(message, extra);
-    }
-    else {
-        ctx.editMessageText(message, __extra);
-        // ctx.answerCbQuery();
-    }
+    // @ts-ignore
+    ctx.update["message"] ? ctx.reply(message, extra) : ctx.editMessageText(message, extra);
 }
 exports.greeting = greeting;
 home.enter(function (ctx) { return greeting(ctx); });
-handler.on("message", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        greeting(ctx);
-        return [2 /*return*/];
-    });
-}); });
-home.hears(/\/start/, function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+home.action(/.*/, function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
     var data;
     return __generator(this, function (_a) {
-        console.log(ctx.update);
-        greeting(ctx);
-        data = ctx.update["message"].from;
-        data.date = ctx.update["message"].date;
-        (0, controller_1.getstart)(ctx.update["message"].from);
-        return [2 /*return*/];
+        switch (_a.label) {
+            case 0:
+                data = ctx.update["callback_query"].data;
+                return [4 /*yield*/, ctx.scene.enter(data)];
+            case 1:
+                _a.sent();
+                return [4 /*yield*/, ctx.answerCbQuery(data)];
+            case 2:
+                _a.sent();
+                return [2 /*return*/];
+        }
     });
 }); });
-home.action("vocabular", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        ctx.answerCbQuery();
-        ctx.scene.enter("vocabular");
-        return [2 /*return*/];
-    });
-}); });
-home.action("study", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        ctx.answerCbQuery();
-        ctx.scene.enter("study");
-        return [2 /*return*/];
-    });
-}); });
-home.action("dashboard", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        ctx.answerCbQuery();
-        ctx.scene.enter("dashboard");
-        return [2 /*return*/];
-    });
-}); });
-home.command("vocabular", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/, ctx.scene.enter("vocabular")];
+// Получаем название сцены из массива и переходим, если это команда
+home.command(scenes.fields, function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
+    return [2 /*return*/, ctx.scene.enter(ctx.update["message"].text.replace('/', ''))];
 }); }); });
-home.command("study", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/, ctx.scene.enter("study")];
+// Обработка входящих
+handler.on("message", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
+    return [2 /*return*/, greeting(ctx)];
 }); }); });
-home.command("dashboard", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/, ctx.scene.enter("dashboard")];
-}); }); });
-home.action("study", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        ctx.answerCbQuery();
-        ctx.wizard.selectStep(3);
-        ctx.editMessageText("Обучение", {
-            parse_mode: 'HTML', reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: 'Приступить',
-                            callback_data: 'start'
-                        }
-                    ],
-                    [
-                        {
-                            text: 'Назад',
-                            callback_data: 'home'
-                        }
-                    ]
-                ]
-            }
-        });
-        return [2 /*return*/];
-    });
-}); });
-home.command("blitz", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        ctx.scene.enter("blitz");
-        return [2 /*return*/];
-    });
-}); });
+// 
 exports["default"] = home;

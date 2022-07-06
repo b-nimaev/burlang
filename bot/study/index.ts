@@ -1,33 +1,31 @@
 import { Composer, Scenes } from "telegraf";
 import { MyContext } from "../model/Context";
 
+const message = "Самоучитель"
+const extraGreeting = {
+    parse_mode: 'HTML', reply_markup: {
+        inline_keyboard: [
+            [
+                {
+                    text: 'Добавить',
+                    callback_data: 'add'
+                },
+                {
+                    text: 'На главную',
+                    callback_data: "home"
+                }
+            ],
+        ]
+    }
+}
+
 function greeting(ctx: MyContext) {
-    if (ctx.message) {
-        ctx.reply("Самоучитель", {
-            parse_mode: 'HTML', reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: 'Добавить',
-                            callback_data: 'add'
-                        },
-                    ],
-                ]
-            }
-        })
+    if (ctx.update["message"]) {
+        // @ts-ignore
+        ctx.reply(message, extraGreeting)
     } else {
-        ctx.editMessageText("Самоучитель", {
-            parse_mode: 'HTML', reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: 'Добавить',
-                            callback_data: 'add'
-                        },
-                    ],
-                ]
-            }
-        })
+        // @ts-ignore
+        ctx.editMessageText(message, extraGreeting)
     }
 }
 
@@ -44,6 +42,7 @@ study.command("vocabular", async (ctx) => ctx.scene.enter("vocabular"))
 study.command("home", async (ctx) => ctx.scene.enter("home"))
 study.enter(async (ctx) => greeting(ctx))
 
+study.action("home", async (ctx) => ctx.scene.enter("home"))
 
 
 export default study

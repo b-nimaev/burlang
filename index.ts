@@ -36,7 +36,7 @@ bot.use((ctx, next) => {
 const secretPath = `/telegraf/${bot.secretPathComponent()}`
 // console.log(secretPath)
 if (process.env.mode === "development") {
-    bot.telegram.setWebhook(`https://d4f7-81-23-175-121.eu.ngrok.io${secretPath}`)
+    bot.telegram.setWebhook(`https://0f0b-81-23-175-121.eu.ngrok.io${secretPath}`)
         .then((status) => console.log('Webhook setted: ' + status))
 } else {
     bot.telegram.setWebhook(`https://say-an.ru${secretPath}`)
