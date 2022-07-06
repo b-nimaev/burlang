@@ -1,5 +1,5 @@
 import { Composer, Scenes } from "telegraf";
-import { MyContext } from "../bot/Model/Context";
+import { MyContext } from "../bot/Model";
 import { feedback_manager_register, get_feedback_managers, get_feedback_props, register_feedback_manager, write_feedback_prop } from "../bot/Controller";
 
 const extra = {

@@ -3,7 +3,7 @@ import { Scenes, session, Telegraf } from 'telegraf'
 import blitz from './View/Blitz/BlitzScene';
 import dashboard from './View/Dashboard/DashboardScene';
 import home from './View/Home/HomeScene'
-import { MyContext } from "./Model/Context"
+import { MyContext } from "./Model"
 import study from './View/Study/SudyScene';
 import vocabular from './View/Vocabular/VocabularScene';
 import vocabularSettings from './View/Vocabular/VocabularSettings';

@@ -1,5 +1,5 @@
 import { Composer, Scenes } from "telegraf";
-import { MyContext } from "../../../../Model/Context";
+import { MyContext } from "../../../../Model";
 const scenes = ["alphabet", "soundsAndLetters", "wordFormation", "partsOfSpeech", "cases", "verbs", "sentences", "negation", "home"]
 const message = "Предложения"
 const extraGreeting = {

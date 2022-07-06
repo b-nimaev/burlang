@@ -1,5 +1,5 @@
 import { Composer, Scenes } from "telegraf";
-import { MyContext } from "../../Model/Context";
+import { MyContext } from "../../Model";
 const message = "Настройки \n<code>Подтверждение правильности ввода: ВКЛ \nБесконечное добавление слов: ВЫКЛ</code> \n"
 const extra = {
     parse_mode: 'HTML', reply_markup: {

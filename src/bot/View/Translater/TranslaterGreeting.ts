@@ -1,4 +1,4 @@
-import { MyContext } from "../../Model/Context"
+import { MyContext } from "../../Model"
 
 const message = "<b>Переводчик</b> \n\nОтправьте текст для перевода"
 const extra = {

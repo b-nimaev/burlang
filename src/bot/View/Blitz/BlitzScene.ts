@@ -1,6 +1,6 @@
 import { Composer, Scenes } from "telegraf";
 import { setTranslate, setWord } from "../../Controller";
-import { MyContext } from "../../Model/Context";
+import { MyContext } from "../../Model";
 require("dotenv").config()
 
 const message = "Блиц добавление слов"

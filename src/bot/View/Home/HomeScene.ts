@@ -1,5 +1,5 @@
 import { Composer, Scenes } from "telegraf";
-import { MyContext } from "../../Model/Context";
+import { MyContext } from "../../Model";
 require("dotenv").config();
 
 const scenes = process.env.scenes.split(",")
