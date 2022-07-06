@@ -1,13 +1,13 @@
 import { Request, Response } from 'express'
 import { Scenes, session, Telegraf } from 'telegraf'
-import blitz from './bot/blitz';
-import dashboard from './bot/dashboard';
-import home from './bot/home'
-import { MyContext } from "./bot/model/Context"
-import study from './bot/study';
-import vocabular from './bot/vocabular';
-import vocabularSettings from './bot/vocabular/settings';
-import translater from "./bot/Translater/TranslaterScene";
+import blitz from './blitz';
+import dashboard from './dashboard';
+import home from './home'
+import { MyContext } from "./model/Context"
+import study from './study';
+import vocabular from './vocabular';
+import vocabularSettings from './vocabular/settings';
+import translater from "./Translater/TranslaterScene";
 
 const fs = require('fs');
 const key = fs.readFileSync('./ssl/localhost.decrypted.key');
