@@ -1,28 +1,8 @@
 import { Composer, Scenes } from "telegraf";
 import { MyContext } from "../model/Context";
-import { getstart } from "../controller";
 require("dotenv").config();
 
-const scenes = {
-    fields: ["study", "vocabular", "translater", "dashboard", "home", "blitz"]
-}
-
-const extra = {
-    parse_mode: 'HTML',
-    reply_markup: {
-        inline_keyboard: [
-            [
-                { text: "Самоучитель", callback_data: "study" },
-                { text: "Словарь", callback_data: "vocabular" }
-            ],
-            [{ text: 'Переводчик', callback_data: 'translater' }],
-            [{ text: "Личный кабинет", callback_data: "dashboard" }]
-        ]
-    }
-}
-
-let message = `Самоучитель бурятского языка.\n\n Выберите нужный раздел, чтобы начать изучение 👇`
-
+const scenes = process.env.scenes.split(",")
 const handler = new Composer<MyContext>();
 const home = new Scenes.WizardScene(
     "home",
@@ -30,6 +10,22 @@ const home = new Scenes.WizardScene(
 );
 
 export function greeting(ctx: MyContext) {
+    const extra = {
+        parse_mode: 'HTML',
+        reply_markup: {
+            inline_keyboard: [
+                [
+                    { text: "Самоучитель", callback_data: "study" },
+                    { text: "Словарь", callback_data: "vocabular" }
+                ],
+                [{ text: 'Переводчик', callback_data: 'translater' }],
+                [{ text: "Личный кабинет", callback_data: "dashboard" }]
+            ]
+        }
+    }
+
+    let message = `Самоучитель бурятского языка \n\nКаждое взаимодействие с ботом, \nвлияет на сохранение и дальнейшее развитие <b>Бурятского языка</b> \n\nВыберите раздел, чтобы приступить`
+
     // @ts-ignore
     ctx.update["message"] ? ctx.reply(message, extra) : ctx.editMessageText(message, extra)
 }
@@ -46,7 +42,7 @@ home.action(/.*/, async (ctx) => {
 })
 
 // Получаем название сцены из массива и переходим, если это команда
-home.command(scenes.fields, async (ctx) => ctx.scene.enter(ctx.update["message"].text.replace('/', '')))
+home.command(scenes, async (ctx) => ctx.scene.enter(ctx.update["message"].text.replace('/', '')))
 
 // Обработка входящих
 handler.on("message", async (ctx) => greeting(ctx))

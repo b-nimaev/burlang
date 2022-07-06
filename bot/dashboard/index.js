@@ -37,34 +37,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var telegraf_1 = require("telegraf");
+var greeting_1 = require("./greeting");
 require("dotenv").config();
-var message = "Личный кабинет";
-var extra = {
-    parse_mode: 'HTML', reply_markup: {
-        inline_keyboard: [
-            [
-                {
-                    text: 'Обратная связь',
-                    callback_data: 'contact'
-                },
-                {
-                    text: 'На главную',
-                    callback_data: 'home'
-                }
-            ],
-        ]
-    }
-};
-function greeting(ctx) {
-    if (ctx.update["callback_query"]) {
-        // @ts-ignore
-        ctx.editMessageText(message, extra);
-    }
-    else {
-        // @ts-ignore
-        ctx.reply(message, extra);
-    }
-}
 var handler = new telegraf_1.Composer();
 var dashboard = new telegraf_1.Scenes.WizardScene("dashboard", handler, (function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
@@ -77,7 +51,7 @@ var dashboard = new telegraf_1.Scenes.WizardScene("dashboard", handler, (functio
                                 case 0: return [4 /*yield*/, ctx.reply("Спасибо за обратную связь! \nВаше сообщение получено")];
                                 case 1:
                                     _a.sent();
-                                    ctx.scene.enter("home");
+                                    ctx.scene.enter("dashboard");
                                     return [2 /*return*/];
                             }
                         });
@@ -90,7 +64,7 @@ var dashboard = new telegraf_1.Scenes.WizardScene("dashboard", handler, (functio
                                 case 0: return [4 /*yield*/, ctx.reply("Спасибо за обратную связь! \nВаше сообщение получено")];
                                 case 1:
                                     _a.sent();
-                                    ctx.scene.enter("home");
+                                    ctx.scene.enter("dashboard");
                                     return [2 /*return*/];
                             }
                         });
@@ -101,34 +75,30 @@ var dashboard = new telegraf_1.Scenes.WizardScene("dashboard", handler, (functio
         return [2 /*return*/];
     });
 }); }));
-handler.on("message", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/, greeting(ctx)];
-}); }); });
-dashboard.command("vocabular", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/, ctx.scene.enter("vocabular")];
-}); }); });
-dashboard.command("study", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/, ctx.scene.enter("study")];
-}); }); });
-dashboard.command("home", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/, ctx.scene.enter("home")];
-}); }); });
 dashboard.enter(function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/, greeting(ctx)];
+    return [2 /*return*/, (0, greeting_1["default"])(ctx)];
 }); }); });
 dashboard.action("home", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        ctx.answerCbQuery();
         ctx.scene.enter("home");
+        ctx.answerCbQuery();
         return [2 /*return*/];
     });
 }); });
 dashboard.action("contact", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        ctx.answerCbQuery();
         ctx.wizard.next();
         ctx.editMessageText("Отправьте сообщение, администрация ответит в ближайшее время");
+        ctx.answerCbQuery();
         return [2 /*return*/];
     });
 }); });
+// Получаем название сцены из массива и переходим, если это команда
+dashboard.command(process.env.scenes.split(","), function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
+    return [2 /*return*/, ctx.scene.enter(ctx.update["message"].text.replace('/', ''))];
+}); }); });
+// Обработка входящих
+handler.on("message", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
+    return [2 /*return*/, (0, greeting_1["default"])(ctx)];
+}); }); });
 exports["default"] = dashboard;
