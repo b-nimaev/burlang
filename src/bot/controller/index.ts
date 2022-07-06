@@ -17,6 +17,7 @@ export const getTranslatedVocabular = async function () {
     }
 }
 
+
 export const setWord = async function (update) {
 
     let word = update["message"].text.toLowerCase()
