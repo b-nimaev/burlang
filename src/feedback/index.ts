@@ -1,9 +1,9 @@
 import { Request, Response } from 'express'
 import { Scenes, session, Telegraf, Context, Composer, Telegram } from 'telegraf'
 import { User } from 'telegraf/typings/core/types/typegram';
-import { get_feedback_managers, get_feedback_props } from '../bot/controller';
+import { get_feedback_managers, get_feedback_props } from '../bot/Controller';
 
-import { MyContext } from '../bot/model/Context'
+import { MyContext } from '../bot/Model/Context'
 import home from './home';
 
 const fs = require('fs');

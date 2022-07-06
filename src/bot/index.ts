@@ -1,13 +1,22 @@
 import { Request, Response } from 'express'
 import { Scenes, session, Telegraf } from 'telegraf'
-import blitz from './blitz';
-import dashboard from './dashboard';
-import home from './home'
-import { MyContext } from "./model/Context"
-import study from './study';
-import vocabular from './vocabular';
-import vocabularSettings from './vocabular/settings';
-import translater from "./Translater/TranslaterScene";
+import blitz from './View/Blitz/BlitzScene';
+import dashboard from './View/Dashboard/DashboardScene';
+import home from './View/Home/HomeScene'
+import { MyContext } from "./Model/Context"
+import study from './View/Study/SudyScene';
+import vocabular from './View/Vocabular/VocabularScene';
+import vocabularSettings from './View/Vocabular/VocabularSettings';
+import translater from "./View/Translater/TranslaterScene";
+
+import alphabet from "./View/Study/Partials/Alphabet/AlphabetPartial"
+import soundsAndLetters from "./View/Study/Partials/SoundsAndLetters/SoundsAndLettersPartial"
+import wordFormation from "./View/Study/Partials/WordFormation/WordFormationPartial"
+import partsOfSpeech from "./View/Study/Partials/PartsOfSpeech/PartsOfSpeechPartial"
+import cases from "./View/Study/Partials/Cases/CasesPartial"
+import verbs from "./View/Study/Partials/Verbs/VerbsPartial"
+import sentences from "./View/Study/Partials/Sentences/SentencesPartial"
+import negation from "./View/Study/Partials/Negation/NegationPartial"
 
 const fs = require('fs');
 const key = fs.readFileSync('./ssl/localhost.decrypted.key');
@@ -19,6 +28,7 @@ require("dotenv").config()
 var bot_token: string
 if (process.env.mode == "development") {
     bot_token = process.env.burlang_dev
+    console.log(bot_token)
 } else {
     bot_token = process.env.BOT_TOKEN
 }
@@ -34,7 +44,16 @@ const scenes = [
     vocabular,
     vocabularSettings,
     blitz,
-    translater
+    translater,
+
+    alphabet,
+    soundsAndLetters,
+    wordFormation,
+    partsOfSpeech,
+    cases,
+    verbs,
+    sentences,
+    negation
 ]
 
 const stage = new Scenes.Stage<MyContext>(scenes, {
@@ -52,7 +71,7 @@ bot.use((ctx, next) => {
 const secretPath = `/telegraf/${bot.secretPathComponent()}`
 // console.log(secretPath)
 if (process.env.mode === "development") {
-    bot.telegram.setWebhook(`https://fe9a-81-23-175-121.eu.ngrok.io${secretPath}`)
+    bot.telegram.setWebhook(`https://d5ca-81-23-175-121.eu.ngrok.io${secretPath}`)
         .then((status) => console.log('Webhook setted: ' + status))
 } else {
     bot.telegram.setWebhook(`https://say-an.ru${secretPath}`)

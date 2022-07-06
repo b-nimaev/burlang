@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 exports.greeting = void 0;
 var telegraf_1 = require("telegraf");
-var controller_1 = require("../bot/controller");
+var Controller_1 = require("../bot/Controller");
 var extra = {
     parse_mode: 'HTML',
     reply_markup: {
@@ -59,12 +59,12 @@ function greeting(ctx) {
         var message, err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, (0, controller_1.get_feedback_props)()
+                case 0: return [4 /*yield*/, (0, Controller_1.get_feedback_props)()
                         .then(function (messages) { return "\u0412\u0445\u043E\u0434\u044F\u0449\u0438\u0445 \u043E\u0442\u0437\u044B\u0432\u043E\u0432 ".concat(messages.length); })];
                 case 1:
                     message = _a.sent();
                     if (!ctx.update["callback_query"]) return [3 /*break*/, 3];
-                    return [4 /*yield*/, (0, controller_1.feedback_manager_register)(ctx.update["callback_query"].from)];
+                    return [4 /*yield*/, (0, Controller_1.feedback_manager_register)(ctx.update["callback_query"].from)];
                 case 2:
                     if (!(_a.sent())) {
                         return [2 /*return*/, ctx.reply('Нет прав')];
@@ -75,7 +75,7 @@ function greeting(ctx) {
                     return [3 /*break*/, 8];
                 case 3:
                     if (!ctx.update["message"]) return [3 /*break*/, 8];
-                    return [4 /*yield*/, (0, controller_1.feedback_manager_register)(ctx.update["message"].from)];
+                    return [4 /*yield*/, (0, Controller_1.feedback_manager_register)(ctx.update["message"].from)];
                 case 4:
                     if (!!(_a.sent())) return [3 /*break*/, 5];
                     return [2 /*return*/, ctx.reply('Нет прав')];
@@ -107,7 +107,7 @@ home.hears(/\/register/, function (ctx) { return __awaiter(void 0, void 0, void 
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, (0, controller_1.register_feedback_manager)(ctx.update["message"].from)
+                return [4 /*yield*/, (0, Controller_1.register_feedback_manager)(ctx.update["message"].from)
                         .then(function (data) { return console.log(data); })];
             case 1:
                 _a.sent();
@@ -126,7 +126,7 @@ home.action('view', function (ctx) { return __awaiter(void 0, void 0, void 0, fu
         switch (_a.label) {
             case 0:
                 ctx.answerCbQuery();
-                return [4 /*yield*/, (0, controller_1.get_feedback_props)()];
+                return [4 /*yield*/, (0, Controller_1.get_feedback_props)()];
             case 1:
                 messages = _a.sent();
                 i = 0;

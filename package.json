@@ -21,7 +21,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev src/bot/index.ts",
-    "build": "tsc ./src/bot/index.ts && node ./dist/bot/index.js"
+    "build": "tsc --build tsconfig.json && node ./dist/bot/index.js"
   },
   "keywords": [],
   "author": "",

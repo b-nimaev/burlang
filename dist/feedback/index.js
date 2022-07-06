@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var telegraf_1 = require("telegraf");
-var controller_1 = require("../bot/controller");
+var Controller_1 = require("../bot/Controller");
 var home_1 = require("./home");
 var fs = require('fs');
 var key = fs.readFileSync('./ssl/localhost.decrypted.key');
@@ -66,10 +66,10 @@ bot.use(function (ctx, next) {
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, (0, controller_1.get_feedback_managers)()];
+                case 0: return [4 /*yield*/, (0, Controller_1.get_feedback_managers)()];
                 case 1:
                     users = _a.sent();
-                    return [4 /*yield*/, (0, controller_1.get_feedback_props)()
+                    return [4 /*yield*/, (0, Controller_1.get_feedback_props)()
                             .then(function (messages) { return "\u0412\u0445\u043E\u0434\u044F\u0449\u0438\u0445 \u043E\u0442\u0437\u044B\u0432\u043E\u0432 ".concat(messages.length); })];
                 case 2:
                     message = _a.sent();

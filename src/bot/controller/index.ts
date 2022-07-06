@@ -1,4 +1,3 @@
-import { ifError } from "assert";
 import { MongoClient } from "mongodb";
 require("dotenv").config();
 
