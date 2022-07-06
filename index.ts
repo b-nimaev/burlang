@@ -16,7 +16,14 @@ const https = require('https');
 const express = require("express")
 require("dotenv").config()
 
-const bot = new Telegraf<MyContext>(<string>process.env.BOT_TOKEN)
+var bot_token: string
+if (process.env.mode == "development") {
+    bot_token = process.env.burlang_dev
+} else {
+    bot_token = process.env.BOT_TOKEN
+}
+
+const bot = new Telegraf<MyContext>(bot_token)
 const app = express()
 const port = 8443
 const scenes = [

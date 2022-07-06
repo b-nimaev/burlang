@@ -14,7 +14,14 @@ var cert = fs.readFileSync('./ssl/localhost.crt');
 var https = require('https');
 var express = require("express");
 require("dotenv").config();
-var bot = new telegraf_1.Telegraf(process.env.BOT_TOKEN);
+var bot_token;
+if (process.env.mode == "development") {
+    bot_token = process.env.burlang_dev;
+}
+else {
+    bot_token = process.env.BOT_TOKEN;
+}
+var bot = new telegraf_1.Telegraf(bot_token);
 var app = express();
 var port = 8443;
 var scenes = [
@@ -42,7 +49,7 @@ bot.use(function (ctx, next) {
 var secretPath = "/telegraf/".concat(bot.secretPathComponent());
 // console.log(secretPath)
 if (process.env.mode === "development") {
-    bot.telegram.setWebhook("https://0f0b-81-23-175-121.eu.ngrok.io".concat(secretPath))
+    bot.telegram.setWebhook("https://fe9a-81-23-175-121.eu.ngrok.io".concat(secretPath))
         .then(function (status) { return console.log('Webhook setted: ' + status); });
 }
 else {

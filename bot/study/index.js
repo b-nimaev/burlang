@@ -43,9 +43,45 @@ var extraGreeting = {
         inline_keyboard: [
             [
                 {
-                    text: 'Добавить',
+                    text: 'Алфавит',
                     callback_data: 'add'
                 },
+                {
+                    text: 'Звуки и буквы',
+                    callback_data: "home"
+                },
+            ],
+            [
+                {
+                    text: 'Словообразование',
+                    callback_data: "home"
+                },
+                {
+                    text: 'Части речи',
+                    callback_data: 'add'
+                }
+            ],
+            [
+                {
+                    text: 'Падежи',
+                    callback_data: "home"
+                },
+                {
+                    text: 'Глаголы',
+                    callback_data: "home"
+                },
+                {
+                    text: 'Предложения',
+                    callback_data: 'add'
+                }
+            ],
+            [
+                {
+                    text: 'Отриацание в бурятском языке',
+                    callback_data: "home"
+                }
+            ],
+            [
                 {
                     text: 'На главную',
                     callback_data: "home"
