@@ -38,6 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var telegraf_1 = require("telegraf");
 var message = "Самоучитель";
+var scenes = ["study", "vocabular", "translater", "dashboard", "home", "blitz"];
 var extraGreeting = {
     parse_mode: 'HTML', reply_markup: {
         inline_keyboard: [
@@ -102,23 +103,19 @@ function greeting(ctx) {
 }
 var handler = new telegraf_1.Composer();
 var study = new telegraf_1.Scenes.WizardScene("study", handler);
-handler.on("message", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/, greeting(ctx)];
-}); }); });
-study.command("dashboard", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/, ctx.scene.enter("dashboard")];
-}); }); });
-study.command("vocabular", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/, ctx.scene.enter("vocabular")];
-}); }); });
-study.command("home", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/, ctx.scene.enter("home")];
-}); }); });
+// handler.on("message", async (ctx) => greeting(ctx))
 study.enter(function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     return [2 /*return*/, greeting(ctx)];
 }); }); });
 study.action("home", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     return [2 /*return*/, ctx.scene.enter("home")];
 }); }); });
+// Получаем название сцены из массива и переходим, если это команда
+study.command(scenes, function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        console.log(ctx.update["message"]);
+        return [2 /*return*/];
+    });
+}); });
 exports["default"] = study;
 //# sourceMappingURL=index.js.map

@@ -2,6 +2,7 @@ import { Composer, Scenes } from "telegraf";
 import { MyContext } from "../../Model";
 
 const message = "Самоучитель"
+const scenes = ["study", "vocabular", "translater", "dashboard", "home", "blitz"]
 const extraGreeting = {
     parse_mode: 'HTML', reply_markup: {
         inline_keyboard: [
@@ -71,14 +72,13 @@ const study = new Scenes.WizardScene(
     handler
 );
 
-handler.on("message", async (ctx) => greeting(ctx))
-
-study.command("dashboard", async (ctx) => ctx.scene.enter("dashboard"))
-study.command("vocabular", async (ctx) => ctx.scene.enter("vocabular"))
-study.command("home", async (ctx) => ctx.scene.enter("home"))
+// handler.on("message", async (ctx) => greeting(ctx))
 study.enter(async (ctx) => greeting(ctx))
 
 study.action("home", async (ctx) => ctx.scene.enter("home"))
-
+// Получаем название сцены из массива и переходим, если это команда
+study.command(scenes, async (ctx) => {
+    console.log(ctx.update["message"])
+})
 
 export default study

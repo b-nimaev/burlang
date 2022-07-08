@@ -62,11 +62,12 @@ bot.use(function (ctx, next) {
     ctx.myProp = (_a = ctx.chat) === null || _a === void 0 ? void 0 : _a.first_name;
     return next();
 });
+bot.start(function (ctx) { return ctx.scene.enter("home"); });
 // Backend
 var secretPath = "/telegraf/".concat(bot.secretPathComponent());
 // console.log(secretPath)
 if (process.env.mode === "development") {
-    bot.telegram.setWebhook("https://d5ca-81-23-175-121.eu.ngrok.io".concat(secretPath))
+    bot.telegram.setWebhook("".concat(process.env.ngrok).concat(secretPath))
         .then(function (status) { return console.log('Webhook setted: ' + status); });
 }
 else {

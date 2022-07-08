@@ -40,6 +40,7 @@ exports.greeting = void 0;
 var telegraf_1 = require("telegraf");
 require("dotenv").config();
 var scenes = process.env.scenes.split(",");
+console.log(scenes);
 var handler = new telegraf_1.Composer();
 var home = new telegraf_1.Scenes.WizardScene("home", handler);
 function greeting(ctx) {
@@ -79,9 +80,13 @@ home.action(/.*/, function (ctx) { return __awaiter(void 0, void 0, void 0, func
     });
 }); });
 // Получаем название сцены из массива и переходим, если это команда
-home.command(scenes, function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/, ctx.scene.enter(ctx.update["message"].text.replace('/', ''))];
-}); }); });
+handler.command(scenes, function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        console.log(ctx.update["message"].text.replace('/', ''));
+        ctx.scene.enter(ctx.update["message"].text.replace('/', ''));
+        return [2 /*return*/];
+    });
+}); });
 // Обработка входящих
 handler.on("message", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     return [2 /*return*/, greeting(ctx)];

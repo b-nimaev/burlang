@@ -1,9 +1,9 @@
 import { Request, Response } from 'express'
 import { Scenes, session, Telegraf } from 'telegraf'
+import { MyContext } from "./Model"
 import blitz from './View/Blitz/BlitzScene';
 import dashboard from './View/Dashboard/DashboardScene';
 import home from './View/Home/HomeScene'
-import { MyContext } from "./Model"
 import study from './View/Study/SudyScene';
 import vocabular from './View/Vocabular/VocabularScene';
 import vocabularSettings from './View/Vocabular/VocabularSettings';
@@ -67,11 +67,12 @@ bot.use((ctx, next) => {
     ctx.myProp = ctx.chat?.first_name
     return next()
 })
+bot.start((ctx) => ctx.scene.enter("home"))
 // Backend
 const secretPath = `/telegraf/${bot.secretPathComponent()}`
 // console.log(secretPath)
 if (process.env.mode === "development") {
-    bot.telegram.setWebhook(`https://d5ca-81-23-175-121.eu.ngrok.io${secretPath}`)
+    bot.telegram.setWebhook(`${process.env.ngrok}${secretPath}`)
         .then((status) => console.log('Webhook setted: ' + status))
 } else {
     bot.telegram.setWebhook(`https://say-an.ru${secretPath}`)

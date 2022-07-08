@@ -3,6 +3,7 @@ import { MyContext } from "../../Model";
 require("dotenv").config();
 
 const scenes = process.env.scenes.split(",")
+console.log(scenes)
 const handler = new Composer<MyContext>();
 const home = new Scenes.WizardScene(
     "home",
@@ -42,7 +43,10 @@ home.action(/.*/, async (ctx) => {
 })
 
 // Получаем название сцены из массива и переходим, если это команда
-home.command(scenes, async (ctx) => ctx.scene.enter(ctx.update["message"].text.replace('/', '')))
+handler.command(scenes, async (ctx) => {
+    console.log(ctx.update["message"].text.replace('/', ''))
+    ctx.scene.enter(ctx.update["message"].text.replace('/', ''))
+})
 
 // Обработка входящих
 handler.on("message", async (ctx) => greeting(ctx))
