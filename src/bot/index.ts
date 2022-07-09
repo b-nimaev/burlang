@@ -67,13 +67,12 @@ const stage = new Scenes.Stage<MyContext>(scenes, {
 bot.use(session())
 bot.use(stage.middleware())
 bot.use((ctx, next) => {
-    console.log(ctx.update)
     // @ts-ignore
     ctx.myProp = ctx.chat?.first_name
     return next()
 })
 bot.start((ctx) => ctx.scene.enter("home"))
-bot.command(scenes_, async (ctx) => ctx.scene.enter(ctx.update["message"].text.replace('/', '')))
+// bot.command(scenes_, async (ctx) => ctx.scene.enter(ctx.update["message"].text.replace('/', '')))
 
 // Backend
 const secretPath = `/telegraf/${bot.secretPathComponent()}`
