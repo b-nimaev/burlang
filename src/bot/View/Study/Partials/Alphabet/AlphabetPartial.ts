@@ -1,7 +1,10 @@
 import { Composer, Scenes } from "telegraf";
 import { MyContext } from "../../../../Model";
-const scenes = ["alphabet", "soundsAndLetters", "wordFormation", "partsOfSpeech", "cases", "verbs", "sentences", "negation", "home"]
-const message = "Алфавит"
+let scenes: Array<string> = process.env.scenes.split(",")
+let partials: Array<string> = ["alphabet", "soundsAndLetters", "wordFormation", "partsOfSpeech", "cases", "verbs", "sentences", "negation", "home"]
+scenes = scenes.concat(partials)
+
+const message = "<b>Алфавит</b> \nhttps://telegra.ph/Alfavit-07-08"
 const extraGreeting = {
     parse_mode: 'HTML', reply_markup: {
         inline_keyboard: [
@@ -37,14 +40,13 @@ const scene = new Scenes.WizardScene(
 
 handler.on("message", async (ctx) => greeting(ctx))
 
-scene.command("dashboard", async (ctx) => ctx.scene.enter("dashboard"))
-scene.command("vocabular", async (ctx) => ctx.scene.enter("vocabular"))
-scene.command("study", async (ctx) => ctx.scene.enter("study"))
-scene.command("home", async (ctx) => ctx.scene.enter("home"))
+scene.command(scenes, async (ctx) => ctx.scene.enter(ctx.update["message"].text.replace('/', '')))
 scene.enter(async (ctx) => greeting(ctx))
 
-scene.action("back", async (ctx) => ctx.scene.enter('study'))
-scene.action(/.*/, async (ctx) => ctx.scene.enter(ctx.update["callback_query"].data))
+scene.action("back", async (ctx) => {
+    ctx.scene.enter('study')
+    ctx.answerCbQuery()
+})
 
 
 export default scene

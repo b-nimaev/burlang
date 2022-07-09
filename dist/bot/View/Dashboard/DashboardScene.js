@@ -39,6 +39,24 @@ exports.__esModule = true;
 var telegraf_1 = require("telegraf");
 var DashboardGreeting_1 = require("./DashboardGreeting");
 require("dotenv").config();
+var subscribe_message = "<b>\u041B\u0438\u0447\u043D\u044B\u0439 \u043A\u0430\u0431\u0438\u043D\u0435\u0442 / \u041F\u043E\u0434\u043F\u0438\u0441\u043A\u0430</b>";
+var subscribe_extra = {
+    parse_mode: 'HTML',
+    reply_markup: {
+        inline_keyboard: [
+            [
+                {
+                    text: 'Оформить подписку',
+                    callback_data: 'subscribe'
+                },
+                {
+                    text: 'Назад',
+                    callback_data: 'back'
+                }
+            ]
+        ]
+    }
+};
 var handler = new telegraf_1.Composer();
 var dashboard = new telegraf_1.Scenes.WizardScene("dashboard", handler, (function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
@@ -74,6 +92,23 @@ var dashboard = new telegraf_1.Scenes.WizardScene("dashboard", handler, (functio
         }
         return [2 /*return*/];
     });
+}); }), (function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        if (ctx.update["message"]) {
+            subcribe_greeting(ctx);
+        }
+        else {
+            if (ctx.update["callback_query"]) {
+                if (ctx.update["callback_query"].data == "subscribe") {
+                    ctx.wizard.next();
+                    ctx.editMessageText('Тут вывести метод оплаты');
+                    ctx.answerCbQuery('Оформление подписки');
+                }
+                ctx.update["callback_query"].data == "back" ? subcribe_greeting(ctx) : ctx.reply("Возникла непредвиденная Ошибка, повторите снова, пожалуйста /dashboard");
+            }
+        }
+        return [2 /*return*/];
+    });
 }); }));
 dashboard.enter(function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     return [2 /*return*/, (0, DashboardGreeting_1["default"])(ctx)];
@@ -93,6 +128,25 @@ dashboard.action("contact", function (ctx) { return __awaiter(void 0, void 0, vo
         return [2 /*return*/];
     });
 }); });
+dashboard.action("subscription", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
+    return [2 /*return*/, subcribe_greeting(ctx)];
+}); }); });
+function subcribe_greeting(ctx) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            if (ctx.update["message"]) {
+                ctx.reply(subscribe_message, subscribe_extra);
+            }
+            else {
+                ctx.wizard.selectStep(2);
+                // @ts-ignore
+                ctx.editMessageText(subscribe_message, subscribe_extra);
+                ctx.answerCbQuery('Личный кабинет / Подписка');
+            }
+            return [2 /*return*/];
+        });
+    });
+}
 // Получаем название сцены из массива и переходим, если это команда
 dashboard.command(process.env.scenes.split(","), function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     return [2 /*return*/, ctx.scene.enter(ctx.update["message"].text.replace('/', ''))];

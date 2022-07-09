@@ -12,4 +12,5 @@ export interface MyContext extends Context {
     session: MySession;
     scene: Scenes.SceneContextScene<MyContext, MyWizardSession>;
     wizard: Scenes.WizardContextWizard<MyContext>;
+    subscription: any
 }

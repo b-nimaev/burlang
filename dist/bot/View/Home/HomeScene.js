@@ -88,9 +88,7 @@ handler.command(scenes, function (ctx) { return __awaiter(void 0, void 0, void 0
     });
 }); });
 // Обработка входящих
-handler.on("message", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/, greeting(ctx)];
-}); }); });
+// handler.on("message", async (ctx) => greeting(ctx))
 // 
 exports["default"] = home;
 //# sourceMappingURL=HomeScene.js.map

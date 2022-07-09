@@ -36,54 +36,47 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-var telegraf_1 = require("telegraf");
-var scenes = process.env.scenes.split(",");
-var partials = ["alphabet", "soundsAndLetters", "wordFormation", "partsOfSpeech", "cases", "verbs", "sentences", "negation", "home"];
-scenes = scenes.concat(partials);
-var message = "<b>Алфавит</b> \nhttps://telegra.ph/Alfavit-07-08";
-var extraGreeting = {
-    parse_mode: 'HTML', reply_markup: {
-        inline_keyboard: [
-            [
-                {
-                    text: 'Начать изучение',
-                    callback_data: 'start'
-                },
-                {
-                    text: 'Назад',
-                    callback_data: "back"
-                },
-            ],
-        ]
-    }
-};
-function greeting(ctx) {
-    if (ctx.update["message"]) {
-        // @ts-ignore
-        ctx.reply(message, extraGreeting);
-    }
-    else {
-        // @ts-ignore
-        ctx.editMessageText(message, extraGreeting);
-    }
-}
-var handler = new telegraf_1.Composer();
-var scene = new telegraf_1.Scenes.WizardScene("alphabet", handler);
-handler.on("message", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/, greeting(ctx)];
-}); }); });
-scene.command(scenes, function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/, ctx.scene.enter(ctx.update["message"].text.replace('/', ''))];
-}); }); });
-scene.enter(function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/, greeting(ctx)];
-}); }); });
-scene.action("back", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        ctx.scene.enter('study');
-        ctx.answerCbQuery();
-        return [2 /*return*/];
+exports.getStatusSubscription = void 0;
+var mongodb_1 = require("mongodb");
+require("dotenv").config();
+var dbname = process.env.DB_NAME;
+var uri = process.env.DB_CONN_STRING;
+var client = new mongodb_1.MongoClient(uri);
+var getStatusSubscription = function (update) {
+    return __awaiter(this, void 0, void 0, function () {
+        var err_1;
+        var _this = this;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 3, , 4]);
+                    return [4 /*yield*/, client.connect()];
+                case 1:
+                    _a.sent();
+                    return [4 /*yield*/, client.db(dbname)
+                            .collection("users")
+                            .findOne({ id: update.id })
+                            .then(function (user) { return __awaiter(_this, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                if (user.subscription) {
+                                    if (user.subscription.status) {
+                                        return [2 /*return*/, user.subscription];
+                                    }
+                                    else {
+                                        return [2 /*return*/, false];
+                                    }
+                                }
+                                return [2 /*return*/];
+                            });
+                        }); })];
+                case 2: return [2 /*return*/, _a.sent()];
+                case 3:
+                    err_1 = _a.sent();
+                    return [2 /*return*/, false];
+                case 4: return [2 /*return*/];
+            }
+        });
     });
-}); });
-exports["default"] = scene;
-//# sourceMappingURL=AlphabetPartial.js.map
+};
+exports.getStatusSubscription = getStatusSubscription;
+//# sourceMappingURL=dashboard.js.map

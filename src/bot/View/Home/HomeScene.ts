@@ -49,7 +49,7 @@ handler.command(scenes, async (ctx) => {
 })
 
 // Обработка входящих
-handler.on("message", async (ctx) => greeting(ctx))
+// handler.on("message", async (ctx) => greeting(ctx))
 
 // 
 export default home

@@ -25,6 +25,10 @@ const https = require('https');
 const express = require("express")
 require("dotenv").config()
 
+let scenes_: Array<string> = process.env.scenes.split(",")
+let partials: Array<string> = ["alphabet", "soundsAndLetters", "wordFormation", "partsOfSpeech", "cases", "verbs", "sentences", "negation", "home"]
+scenes_ = scenes_.concat(partials)
+
 var bot_token: string
 if (process.env.mode == "development") {
     bot_token = process.env.burlang_dev
@@ -63,11 +67,14 @@ const stage = new Scenes.Stage<MyContext>(scenes, {
 bot.use(session())
 bot.use(stage.middleware())
 bot.use((ctx, next) => {
+    console.log(ctx.update)
     // @ts-ignore
     ctx.myProp = ctx.chat?.first_name
     return next()
 })
 bot.start((ctx) => ctx.scene.enter("home"))
+bot.command(scenes_, async (ctx) => ctx.scene.enter(ctx.update["message"].text.replace('/', '')))
+
 // Backend
 const secretPath = `/telegraf/${bot.secretPathComponent()}`
 // console.log(secretPath)
