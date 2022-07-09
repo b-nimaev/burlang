@@ -99,6 +99,7 @@ function greeting(ctx) {
     else {
         // @ts-ignore
         ctx.editMessageText(message, extraGreeting);
+        ctx.answerCbQuery();
     }
 }
 var handler = new telegraf_1.Composer();
@@ -118,8 +119,21 @@ study.command("home", function (ctx) { return __awaiter(void 0, void 0, void 0, 
 study.enter(function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     return [2 /*return*/, greeting(ctx)];
 }); }); });
-study.action(/.*/, function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/, ctx.scene.enter(ctx.update["callback_query"].data)];
-}); }); });
+study.action("start", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        return [2 /*return*/, ctx.answerCbQuery()];
+    });
+}); });
+study.action(/.*/, function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        try {
+            ctx.scene.enter(ctx.update["callback_query"].data);
+        }
+        catch (err) {
+            console.log(err);
+        }
+        return [2 /*return*/];
+    });
+}); });
 exports["default"] = study;
 //# sourceMappingURL=SudyScene.js.map

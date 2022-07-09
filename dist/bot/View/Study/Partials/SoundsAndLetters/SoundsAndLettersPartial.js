@@ -88,6 +88,12 @@ scene.enter(function (ctx) { return __awaiter(void 0, void 0, void 0, function (
 scene.action("back", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     return [2 /*return*/, ctx.scene.enter('study')];
 }); }); });
+scene.action("start", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        console.log("oh");
+        return [2 /*return*/];
+    });
+}); });
 scene.action(/.*/, function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     return [2 /*return*/, ctx.scene.enter(ctx.update["callback_query"].data)];
 }); }); });

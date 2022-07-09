@@ -63,7 +63,6 @@ const scenes = [
 const stage = new Scenes.Stage<MyContext>(scenes, {
     default: 'home'
 })
-
 bot.use(session())
 bot.use(stage.middleware())
 bot.use((ctx, next) => {

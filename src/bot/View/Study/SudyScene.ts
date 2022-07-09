@@ -62,6 +62,7 @@ function greeting(ctx: MyContext) {
     } else {
         // @ts-ignore
         ctx.editMessageText(message, extraGreeting)
+        ctx.answerCbQuery()
     }
 }
 
@@ -77,8 +78,16 @@ study.command("dashboard", async (ctx) => ctx.scene.enter("dashboard"))
 study.command("vocabular", async (ctx) => ctx.scene.enter("vocabular"))
 study.command("home", async (ctx) => ctx.scene.enter("home"))
 study.enter(async (ctx) => greeting(ctx))
-
-study.action(/.*/, async (ctx) => ctx.scene.enter(ctx.update["callback_query"].data))
+study.action("start", async (ctx) => {
+    return ctx.answerCbQuery()
+})
+study.action(/.*/, async (ctx) => {
+    try {
+        ctx.scene.enter(ctx.update["callback_query"].data)
+    } catch (err) {
+        console.log(err)
+    }
+})
 
 
 export default study

@@ -78,6 +78,12 @@ scene.command(scenes, function (ctx) { return __awaiter(void 0, void 0, void 0, 
 scene.enter(function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     return [2 /*return*/, greeting(ctx)];
 }); }); });
+scene.action("start", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        ctx.answerCbQuery();
+        return [2 /*return*/];
+    });
+}); });
 scene.action("back", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         ctx.scene.enter('study');

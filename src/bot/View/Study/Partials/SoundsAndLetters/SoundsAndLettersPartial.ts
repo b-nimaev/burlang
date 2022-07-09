@@ -44,7 +44,9 @@ scene.command("home", async (ctx) => ctx.scene.enter("home"))
 scene.enter(async (ctx) => greeting(ctx))
 
 scene.action("back", async (ctx) => ctx.scene.enter('study'))
+scene.action("start", async (ctx) => {
+    ctx.answerCbQuery()
+})
 scene.action(/.*/, async (ctx) => ctx.scene.enter(ctx.update["callback_query"].data))
-
 
 export default scene
