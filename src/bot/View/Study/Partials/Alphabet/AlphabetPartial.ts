@@ -43,6 +43,10 @@ handler.on("message", async (ctx) => greeting(ctx))
 scene.command(scenes, async (ctx) => ctx.scene.enter(ctx.update["message"].text.replace('/', '')))
 scene.enter(async (ctx) => greeting(ctx))
 
+scene.action("start", async (ctx) => {
+    ctx.answerCbQuery()
+})
+
 scene.action("back", async (ctx) => {
     ctx.scene.enter('study')
     ctx.answerCbQuery()
