@@ -2,8 +2,10 @@ import { Composer, Scenes } from "telegraf";
 import { MyContext } from "../../Model";
 require("dotenv").config();
 
-const scenes = process.env.scenes.split(",")
-console.log(scenes)
+let scenes_: Array<string> = process.env.scenes.split(",")
+let partials: Array<string> = ["alphabet", "soundsAndLetters", "wordFormation", "partsOfSpeech", "cases", "verbs", "sentences", "negation", "home"]
+scenes_ = scenes_.concat(partials)
+console.log(scenes_)
 const handler = new Composer<MyContext>();
 const home = new Scenes.WizardScene(
     "home",
@@ -43,7 +45,7 @@ home.action(/.*/, async (ctx) => {
 })
 
 // Получаем название сцены из массива и переходим, если это команда
-handler.command(scenes, async (ctx) => {
+handler.command(scenes_, async (ctx) => {
     console.log(ctx.update["message"].text.replace('/', ''))
     ctx.scene.enter(ctx.update["message"].text.replace('/', ''))
 })
