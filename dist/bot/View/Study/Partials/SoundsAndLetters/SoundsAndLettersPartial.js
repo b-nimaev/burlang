@@ -90,7 +90,7 @@ scene.action("back", function (ctx) { return __awaiter(void 0, void 0, void 0, f
 }); }); });
 scene.action("start", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        console.log("oh");
+        ctx.answerCbQuery();
         return [2 /*return*/];
     });
 }); });

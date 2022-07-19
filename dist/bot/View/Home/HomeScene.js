@@ -69,6 +69,7 @@ home.action(/.*/, function (ctx) { return __awaiter(void 0, void 0, void 0, func
         switch (_a.label) {
             case 0:
                 data = ctx.update["callback_query"].data;
+                console.log(data);
                 return [4 /*yield*/, ctx.scene.enter(data)];
             case 1:
                 _a.sent();
@@ -88,7 +89,9 @@ handler.command(scenes, function (ctx) { return __awaiter(void 0, void 0, void 0
     });
 }); });
 // Обработка входящих
-// handler.on("message", async (ctx) => greeting(ctx))
+handler.on("message", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
+    return [2 /*return*/, greeting(ctx)];
+}); }); });
 // 
 exports["default"] = home;
 //# sourceMappingURL=HomeScene.js.map

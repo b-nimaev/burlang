@@ -57,6 +57,19 @@ var subscribe_extra = {
         ]
     }
 };
+var payment_extra = {
+    parse_mode: 'HTML',
+    reply_markup: {
+        inline_keyboard: [
+            [
+                {
+                    text: 'Назад',
+                    callback_data: 'back'
+                }
+            ]
+        ]
+    }
+};
 var handler = new telegraf_1.Composer();
 var dashboard = new telegraf_1.Scenes.WizardScene("dashboard", handler, (function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
@@ -101,11 +114,50 @@ var dashboard = new telegraf_1.Scenes.WizardScene("dashboard", handler, (functio
             if (ctx.update["callback_query"]) {
                 if (ctx.update["callback_query"].data == "subscribe") {
                     ctx.wizard.next();
-                    ctx.editMessageText('Тут вывести метод оплаты');
-                    ctx.answerCbQuery('Оформление подписки');
+                    // @ts-ignore
+                    payment_greeting(ctx);
                 }
-                ctx.update["callback_query"].data == "back" ? subcribe_greeting(ctx) : ctx.reply("Возникла непредвиденная Ошибка, повторите снова, пожалуйста /dashboard");
+                if (ctx.update["callback_query"].data == "about") {
+                    ctx.wizard.selectStep(4);
+                    // @ts-ignore
+                    ctx.editMessageText('О проекте ...', payment_extra);
+                    return [2 /*return*/, ctx.answerCbQuery('О проекте')];
+                }
+                if (ctx.update["callback_query"].data == "back") {
+                    console.log("back");
+                    (0, DashboardGreeting_1["default"])(ctx);
+                    return [2 /*return*/, ctx.answerCbQuery()];
+                }
+                // ctx.update["callback_query"].data == "back" ? subcribe_greeting(ctx) : ctx.reply("Возникла непредвиденная Ошибка, повторите снова, пожалуйста /dashboard")
             }
+        }
+        return [2 /*return*/];
+    });
+}); }), 
+// payment section
+(function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        if (ctx.update["callback_query"]) {
+            if (ctx.update["callback_query"].data == 'back') {
+                subcribe_greeting(ctx);
+                return [2 /*return*/, ctx.answerCbQuery()];
+            }
+        }
+        if (ctx.update["message"]) {
+            payment_greeting(ctx);
+        }
+        return [2 /*return*/];
+    });
+}); }), (function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        if (ctx.update["callback_query"]) {
+            if (ctx.update["callback_query"].data == "back") {
+                (0, DashboardGreeting_1["default"])(ctx);
+                ctx.answerCbQuery();
+            }
+        }
+        else {
+            about_greeting(ctx);
         }
         return [2 /*return*/];
     });
@@ -120,7 +172,7 @@ dashboard.action("home", function (ctx) { return __awaiter(void 0, void 0, void 
         return [2 /*return*/];
     });
 }); });
-dashboard.action("contact", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+handler.action("contact", function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         ctx.wizard.next();
         ctx.editMessageText("Отправьте сообщение, администрация ответит в ближайшее время");
@@ -147,13 +199,44 @@ function subcribe_greeting(ctx) {
         });
     });
 }
+dashboard.action("about", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
+    return [2 /*return*/, about_greeting(ctx)];
+}); }); });
+function about_greeting(ctx) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            if (ctx.update["message"]) {
+                ctx.reply("О проекте ...", payment_extra);
+            }
+            else {
+                ctx.wizard.selectStep(4);
+                // @ts-ignore
+                ctx.editMessageText('О проекте ...', payment_extra);
+                return [2 /*return*/, ctx.answerCbQuery('О проекте')];
+            }
+            return [2 /*return*/];
+        });
+    });
+}
+function payment_greeting(ctx) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            if (ctx.update["callback_query"]) {
+                ctx.editMessageText('Тут вывести метод оплаты', payment_extra);
+                return [2 /*return*/, ctx.answerCbQuery('Оформление подписки')];
+            }
+            else {
+                ctx.reply('Тут вывести метод оплаты', payment_extra);
+            }
+            return [2 /*return*/];
+        });
+    });
+}
 // Получаем название сцены из массива и переходим, если это команда
 dashboard.command(process.env.scenes.split(","), function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     return [2 /*return*/, ctx.scene.enter(ctx.update["message"].text.replace('/', ''))];
 }); }); });
 // Обработка входящих
-handler.on("message", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/, (0, DashboardGreeting_1["default"])(ctx)];
-}); }); });
+// handler.on("message", async (ctx) => greeting(ctx))
 exports["default"] = dashboard;
 //# sourceMappingURL=DashboardScene.js.map

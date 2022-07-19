@@ -44,7 +44,19 @@ scene.command("home", async (ctx) => ctx.scene.enter("home"))
 scene.enter(async (ctx) => greeting(ctx))
 
 scene.action("back", async (ctx) => ctx.scene.enter('study'))
-scene.action(/.*/, async (ctx) => ctx.scene.enter(ctx.update["callback_query"].data))
+scene.action(/.*/, async (ctx) => {
+    try {
+
+        if (ctx.update["callback_query"].data == 'start') {
+            ctx.answerCbQuery('start')
+            return
+        }
+
+        ctx.scene.enter(ctx.update["callback_query"].data)
+    } catch (err) {
+        console.log(err)
+    }
+})
 
 
 export default scene

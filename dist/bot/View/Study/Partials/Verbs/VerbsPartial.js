@@ -88,8 +88,20 @@ scene.enter(function (ctx) { return __awaiter(void 0, void 0, void 0, function (
 scene.action("back", function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     return [2 /*return*/, ctx.scene.enter('study')];
 }); }); });
-scene.action(/.*/, function (ctx) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
-    return [2 /*return*/, ctx.scene.enter(ctx.update["callback_query"].data)];
-}); }); });
+scene.action(/.*/, function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        try {
+            if (ctx.update["callback_query"].data == 'start') {
+                ctx.answerCbQuery('start');
+                return [2 /*return*/];
+            }
+            ctx.scene.enter(ctx.update["callback_query"].data);
+        }
+        catch (err) {
+            console.log(err);
+        }
+        return [2 /*return*/];
+    });
+}); });
 exports["default"] = scene;
 //# sourceMappingURL=VerbsPartial.js.map

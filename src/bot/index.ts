@@ -71,8 +71,10 @@ bot.use((ctx, next) => {
     return next()
 })
 bot.start((ctx) => ctx.scene.enter("home"))
-// bot.command(scenes_, async (ctx) => ctx.scene.enter(ctx.update["message"].text.replace('/', '')))
-
+bot.command(scenes_, async (ctx) => ctx.scene.enter(ctx.update["message"].text.replace('/', '')))
+bot.action("start", async (ctx) => {
+    ctx.answerCbQuery("index")
+})
 // Backend
 const secretPath = `/telegraf/${bot.secretPathComponent()}`
 // console.log(secretPath)

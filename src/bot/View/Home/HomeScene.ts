@@ -36,7 +36,7 @@ home.action(/.*/, async (ctx) => {
 
     // Название сцены
     const data = ctx.update["callback_query"].data
-
+    console.log(data)
     await ctx.scene.enter(data)
     await ctx.answerCbQuery(data)
 
@@ -48,8 +48,9 @@ handler.command(scenes, async (ctx) => {
     ctx.scene.enter(ctx.update["message"].text.replace('/', ''))
 })
 
+
 // Обработка входящих
-// handler.on("message", async (ctx) => greeting(ctx))
+handler.on("message", async (ctx) => greeting(ctx))
 
 // 
 export default home
