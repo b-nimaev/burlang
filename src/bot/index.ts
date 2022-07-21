@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Scenes, session, Telegraf } from 'telegraf'
+import { Markup, Scenes, session, Telegraf } from 'telegraf'
 import { MyContext } from "./Model"
 import blitz from './View/Blitz/BlitzScene';
 import dashboard from './View/Dashboard/DashboardScene';
@@ -66,6 +66,7 @@ const stage = new Scenes.Stage<MyContext>(scenes, {
 bot.use(session())
 bot.use(stage.middleware())
 bot.use((ctx, next) => {
+    console.log(ctx)
     // @ts-ignore
     ctx.myProp = ctx.chat?.first_name
     return next()
@@ -75,6 +76,47 @@ bot.command(scenes_, async (ctx) => ctx.scene.enter(ctx.update["message"].text.r
 bot.action("start", async (ctx) => {
     ctx.answerCbQuery("index")
 })
+
+const shippingOptions = [
+    {
+        id: 'unicorn',
+        title: 'Unicorn express',
+        prices: [{ label: 'Working Time Machine', amount: 10000 }]
+    },
+    {
+        id: 'slowpoke',
+        title: 'Slowpoke mail',
+        prices: [{ label: 'Working Time Machine', amount: 10000 }]
+    }
+]
+const invoice = {
+    provider_token: process.env.PROVIDER_TOKEN,
+    provider_data: JSON.stringify({
+        shopId: 841905
+    }),
+    start_parameter: 'time-machine-sku',
+    title: 'Working Time Machine',
+    description: 'Want to visit your great-great-great-grandparents? Make a fortune at the races? Shake hands with Hammurabi and take a stroll in the Hanging Gardens? Order our Working Time Machine today!',
+    currency: 'RUB',
+    photo_url: 'https://img.clipartfest.com/5a7f4b14461d1ab2caaa656bcee42aeb_future-me-fredo-and-pidjin-the-webcomic-time-travel-cartoon_390-240.png',
+    is_flexible: false,
+    prices: [
+        { label: 'Working Time Machine', amount: 10000 }
+    ],
+    payload: JSON.stringify({
+        coupon: 'BLACK FRIDAY'
+    })
+}
+const replyOptions = Markup.inlineKeyboard([
+    Markup.button.pay('💸 Buy'),
+    Markup.button.url('❤️', 'http://telegraf.js.org')
+])
+
+bot.command('buy', (ctx) => ctx.replyWithInvoice(invoice, replyOptions))
+// @ts-ignore
+bot.on('shipping_query', (ctx) => ctx.answerShippingQuery(true, shippingOptions, "error"))
+bot.on('pre_checkout_query', (ctx) => ctx.answerPreCheckoutQuery(true))
+bot.on('successful_payment', () => console.log('Woohoo'))
 // Backend
 const secretPath = `/telegraf/${bot.secretPathComponent()}`
 // console.log(secretPath)

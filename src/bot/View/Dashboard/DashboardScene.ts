@@ -1,4 +1,4 @@
-import { Composer, Scenes } from "telegraf";
+import { Composer, Markup, Scenes } from "telegraf";
 import { MyContext } from "../../Model";
 import greeting from "./DashboardGreeting";
 require("dotenv").config()
@@ -97,7 +97,10 @@ const dashboard = new Scenes.WizardScene(
                 subcribe_greeting(ctx)
                 return ctx.answerCbQuery()
             }
+
         }
+
+        console.log(ctx)
 
         if (ctx.update["message"]) {
             payment_greeting(ctx)
@@ -153,12 +156,36 @@ async function about_greeting(ctx) {
     }
 }
 
+const invoice = {
+    provider_token: process.env.PROVIDER_TOKEN,
+    start_parameter: 'time-machine-sku',
+    title: 'Working Time Machine',
+    description: 'Want to visit your great-great-great-grandparents? Make a fortune at the races? Shake hands with Hammurabi and take a stroll in the Hanging Gardens? Order our Working Time Machine today!',
+    currency: 'RUB',
+    photo_url: 'https://img.clipartfest.com/5a7f4b14461d1ab2caaa656bcee42aeb_future-me-fredo-and-pidjin-the-webcomic-time-travel-cartoon_390-240.png',
+    is_flexible: true,
+    prices: [
+        { label: 'Working Time Machine', amount: 10000 }
+    ],
+    payload: JSON.stringify({
+        coupon: 'BLACK FRIDAY'
+    })
+}
+
 async function payment_greeting(ctx) {
     if (ctx.update["callback_query"]) {
-        ctx.editMessageText('Тут вывести метод оплаты', payment_extra)
+        // ctx.editMessageText('Тут вывести метод оплаты', payment_extra)
+        ctx.replyWithInvoice(invoice)
+        // ctx.editMessageText(invoice)
+        // ctx.editmessageinvoice
+        // ctx.
         return ctx.answerCbQuery('Оформление подписки')
     } else {
-        ctx.reply('Тут вывести метод оплаты', payment_extra)
+        if (ctx.update["message"].successful_payment) {
+            console.log(ctx.update["message"].successful_payment)
+        } else {
+
+        }
     }
 }
 
@@ -166,6 +193,6 @@ async function payment_greeting(ctx) {
 dashboard.command(process.env.scenes.split(","), async (ctx) => ctx.scene.enter(ctx.update["message"].text.replace('/', '')))
 
 // Обработка входящих
-// handler.on("message", async (ctx) => greeting(ctx))
+handler.on("message", async (ctx) => greeting(ctx))
 
 export default dashboard
