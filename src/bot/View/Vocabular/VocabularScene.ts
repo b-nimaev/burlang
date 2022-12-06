@@ -1,19 +1,12 @@
-import { Composer, Scenes } from "telegraf";
-import { getTranslatedVocabular } from "../../Controller";
+import { Composer, Context, Scenes, Markup } from "telegraf";
+import { ExtraEditMessageText, ExtraReplyMessage } from "telegraf/typings/telegram-types";
+import vocabular_services from "../../Controller/vocabular";
 import { MyContext } from "../../Model";
+import { IUser } from "../../Model/UserModel";
 
-async function getVocabular() {
-    const res = await getTranslatedVocabular()
-    const message = "Словарь \n<code>Найдено значений: 49</code> \n"
-    if (!res) {
-        return false
-    }
-
-    return `Словарь \n<code>Найдено значений: ${res.length}</code>`
-}
-
-const extra = {
-    parse_mode: 'HTML', reply_markup: {
+const extra: ExtraEditMessageText = {
+    parse_mode: 'HTML', 
+    reply_markup: {
         inline_keyboard: [
             [
                 {
@@ -35,257 +28,134 @@ const extra = {
     }
 }
 
-async function greeting(ctx: MyContext) {
-
-    const message = await getVocabular()
-    if (message) {
-        if (ctx.message) {
-            // @ts-ignore
-            ctx.reply(message, extra)
-        } else {
-            // @ts-ignore
-            ctx.editMessageText(message, extra)
-        }
-    } else {
-        ctx.reply("Возникла ошибка, повторите ещё раз")
-        ctx.scene.enter("home")
-    }
-}
-
 const handler = new Composer<MyContext>();
 const vocabular = new Scenes.WizardScene(
     "vocabular",
     handler,
-    (async (ctx) => {
 
-        // Обработка cancel
-        if (ctx.update["callback_query"]) {
-            if (ctx.update["callback_query"].data !== null) {
-                if (ctx.update["callback_query"].data == 'cancel') {
-                    ctx.answerCbQuery()
-                    ctx.wizard.selectStep(0)
-                    greeting(ctx)
-                }
+    // rules
+    async (ctx: MyContext) => {
+        if (ctx.updateType == 'callback_query') {
+            
+            let rules = `Правила \n\n`
+            let extra: ExtraEditMessageText = {
+                parse_mode: 'HTML'
+            }
+
+            if (ctx.update['callback_query'].data == 'rules') {
+                ctx.answerCbQuery()
+                await ctx.editMessageText(rules, extra)
+                await ctx.reply('Ознакомились с правилами?', Markup.keyboard([['Да, всё понятно']]).resize().oneTime())
             }
         }
 
-        // Обработка входящего сообщения
-        if (ctx.update["message"]) {
-            if (ctx.update["message"].text !== null) {
-                // Получаем подтверждение у пользователя насчет введенного слова
-                ctx.reply(`Введенное слово: <b>${ctx.update["message"].text}</b>`, {
-                    parse_mode: 'HTML',
-                    reply_markup: {
-                        inline_keyboard: [
-                            [
-                                {
-                                    text: 'Подтвердить',
-                                    callback_data: 'confirm'
-                                },
-                                {
-                                    text: 'Отмена',
-                                    callback_data: 'cancel'
-                                }
-                            ]
-                        ]
-                    }
+        if (ctx.updateType == 'message') {
+            
+            // проверка
+            if (ctx.update['message'].text == 'Да, всё понятно') {
+                Markup.removeKeyboard()
+                await ctx.reply('Отправьте слово')
+                ctx.wizard.next()
+            }
+            
+        }
+    },
+
+    // get word & write
+    async (ctx: MyContext) => {
+
+        if (ctx.updateType == 'message') {
+
+            let word = ctx.update['message'].text
+            let extra: ExtraEditMessageText = {
+                parse_mode: 'HTML'
+            }
+
+            await vocabular_services.insert_middleware(ctx)
+            await ctx.reply(`<b>${word}</b> записан в базу данных`, extra)
+            await ctx.reply(`<b>Теперь отправьте перевод к веденному тексту:</b> ${word}`, extra)
+
+            ctx.wizard.next()
+        }
+
+    },
+
+    async (ctx: MyContext) => {
+
+        if (ctx.updateType == 'message') {
+
+            let word = ctx.update['message'].text
+            let extra: ExtraEditMessageText = {
+                parse_mode: 'HTML'
+            }
+
+            await vocabular_services.insert_middleware_translate(ctx)
+            await vocabular_services.get_middleware(ctx)
+                .then(async (user: IUser) => {
+                    console.log(user.middleware)
                 })
-
-                // Переходим на следующий шаг
-                ctx.wizard.next();
-            }
         }
 
-    }),
-    (async (ctx) => {
-        if (ctx.update["callback_query"]) {
-            if (ctx.update["callback_query"].data !== null) {
-
-                // Обработка подтверждения || проверки
-                if (ctx.update["callback_query"].data == 'confirm') {
-                    ctx.answerCbQuery("Подтверждение получено")
-                    ctx.editMessageText("Отправьте перевод введенной фразы")
-                    ctx.wizard.next()
-                }
-
-                // Обработка отмены
-                if (ctx.update["callback_query"].data == 'cancel') {
-                    ctx.answerCbQuery("Отказ")
-                    ctx.wizard.selectStep(1)
-                    ctx.editMessageText("Отправте слово, или фразу на <b>бурятском</b>", {
-                        parse_mode: 'HTML',
-                        reply_markup: {
-                            inline_keyboard: [
-                                [
-                                    {
-                                        text: 'Отмена',
-                                        callback_data: 'cancel'
-                                    }
-                                ]
-                            ]
-                        }
-                    })
-                }
-            }
-        }
-    }),
-    (async (ctx) => {
-        if (ctx.update["callback_query"]) {
-            if (ctx.update["callback_query"].data !== null) {
-            }
-        }
-
-        if (ctx.update["message"]) {
-            if (ctx.update["message"].text !== null) {
-                // Получаем подтверждение у пользователя насчет введенного слова
-                ctx.reply(`Перевод: <b>${ctx.update["message"].text}</b>`, {
-                    parse_mode: 'HTML',
-                    reply_markup: {
-                        inline_keyboard: [
-                            [
-                                {
-                                    text: 'Подтвердить',
-                                    callback_data: 'confirm'
-                                },
-                                {
-                                    text: 'Отмена',
-                                    callback_data: 'cancel'
-                                }
-                            ]
-                        ]
-                    }
-                })
-
-                // Переходим на следующий шаг
-                ctx.wizard.next();
-            }
-        }
-    }),
-    (async (ctx) => {
-        if (ctx.update["callback_query"]) {
-            if (ctx.update["callback_query"].data !== null) {
-
-                // Обработка подтверждения || проверки
-                if (ctx.update["callback_query"].data == 'confirm') {
-                    ctx.answerCbQuery("Информация записана. Спасибо!")
-                    ctx.editMessageText("Хотите ещё поделиться информацией?", {
-                        parse_mode: 'HTML',
-                        reply_markup: {
-                            inline_keyboard: [
-                                [
-                                    {
-                                        text: 'Да, продолжаем',
-                                        callback_data: 'confirm'
-                                    },
-                                    {
-                                        text: 'Пока что нет',
-                                        callback_data: 'cancel'
-                                    }
-                                ]
-                            ]
-                        }
-                    })
-                    ctx.wizard.next()
-                }
-
-                // Обработка отмены
-                if (ctx.update["callback_query"].data == 'cancel') {
-                    ctx.answerCbQuery()
-                    ctx.wizard.selectStep(1)
-                    ctx.editMessageText("Отправте слово, или фразу на <b>бурятском</b>", {
-                        parse_mode: 'HTML',
-                        reply_markup: {
-                            inline_keyboard: [
-                                [
-                                    {
-                                        text: 'Отмена',
-                                        callback_data: 'cancel'
-                                    }
-                                ]
-                            ]
-                        }
-                    })
-                }
-            }
-        }
-    }),
-    (async (ctx) => {
-        if (ctx.update["callback_query"]) {
-            if (ctx.update["callback_query"].data !== null) {
-
-                // Обработка подтверждения || проверки
-                if (ctx.update["callback_query"].data == 'confirm') {
-                    ctx.wizard.selectStep(1)
-                    ctx.answerCbQuery("Продолжаем")
-                    ctx.editMessageText("Отправте слово, или фразу на <b>бурятском</b>", {
-                        parse_mode: 'HTML',
-                        reply_markup: {
-                            inline_keyboard: [
-                                [
-                                    {
-                                        text: 'Отмена',
-                                        callback_data: 'cancel'
-                                    }
-                                ]
-                            ]
-                        }
-                    })
-                }
-
-                // Обработка отмены
-                if (ctx.update["callback_query"].data == 'cancel') {
-                    ctx.answerCbQuery()
-                    ctx.wizard.selectStep(1)
-                    ctx.editMessageText("Отправте слово, или фразу на <b>бурятском</b>", {
-                        parse_mode: 'HTML',
-                        reply_markup: {
-                            inline_keyboard: [
-                                [
-                                    {
-                                        text: 'Отмена',
-                                        callback_data: 'cancel'
-                                    }
-                                ]
-                            ]
-                        }
-                    })
-                }
-            }
-        }
-    })
+    }
 );
 
-handler.on("message", async (ctx) => greeting(ctx))
+async function greeting_vocabular (ctx: MyContext) {
+    let message = `Словарь \n\n`
+
+    if (ctx.updateType == 'callback_query') {
+
+        ctx.editMessageText(message, extra)
+        ctx.answerCbQuery()
+    }
+
+    if (ctx.updateType == 'message') {
+        ctx.reply(message, extra)
+    }
+}
+
+handler.on("message", async (ctx) => greeting_vocabular (ctx))
 
 vocabular.command("dashboard", async (ctx) => ctx.scene.enter("dashboard"))
 vocabular.command("study", async (ctx) => ctx.scene.enter("study"))
 vocabular.command("home", async (ctx) => ctx.scene.enter("home"))
-vocabular.enter(async (ctx) => greeting(ctx))
+vocabular.enter(async (ctx) => greeting_vocabular (ctx))
 
-vocabular.action("home", async (ctx) => {
+handler.action('home', async (ctx) => await ctx.scene.enter('home'))
+handler.action('settings', async (ctx) => await ctx.answerCbQuery('Данный функционал ещё в разработке'))
+handler.action('add', async (ctx) => {
+    ctx.wizard.next()
     ctx.answerCbQuery()
-    ctx.scene.enter("home")
+
+    add_word(ctx)
 })
-vocabular.action("add", async (ctx) => {
-    ctx.answerCbQuery()
-    ctx.editMessageText("Отправте слово, или фразу на <b>бурятском</b>", {
+
+async function add_word (ctx: MyContext) {
+    let message = `Обновление словаря`
+    let extra: ExtraEditMessageText = {
         parse_mode: 'HTML',
         reply_markup: {
             inline_keyboard: [
                 [
                     {
-                        text: 'Отмена',
-                        callback_data: 'cancel'
+                        text: 'Прочитать правила',
+                        callback_data: 'rules'
+                    },
+                    {
+                        text: 'Назад',
+                        callback_data: 'back'
                     }
                 ]
             ]
         }
-    })
-    ctx.wizard.next()
-})
-vocabular.action("settings", async (ctx) => {
-    ctx.answerCbQuery()
-    ctx.scene.enter("vocabular-settings")
-})
+    }
+
+    if (ctx.updateType == 'message') {
+        ctx.reply(message, extra)
+    }
+
+    if (ctx.updateType == 'callback_query') {
+        ctx.editMessageText(message, extra)
+    }
+}
 
 export default vocabular

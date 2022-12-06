@@ -1,8 +1,6 @@
 import { Composer, Scenes } from "telegraf";
 import { MyContext } from "../../../../Model";
-let scenes: Array<string> = process.env.scenes.split(",")
 let partials: Array<string> = ["alphabet", "soundsAndLetters", "wordFormation", "partsOfSpeech", "cases", "verbs", "sentences", "negation", "home"]
-scenes = scenes.concat(partials)
 
 const message = "<b>Алфавит</b> \nhttps://telegra.ph/Alfavit-07-08"
 const extraGreeting = {
@@ -32,24 +30,60 @@ function greeting(ctx: MyContext) {
     }
 }
 
+async function first_scene (ctx: MyContext) {
+
+    if (ctx.updateType == 'callback_query') {
+        console.log(ctx.update['callback_query'].data)
+    } else if (ctx.updateType == 'message') {
+        console.log(ctx.update['message'].text)
+    }
+
+}
+
 const handler = new Composer<MyContext>();
-const scene = new Scenes.WizardScene(
+const alphabet = new Scenes.WizardScene(
     "alphabet",
-    handler
+    handler,
+    (async (ctx) => await first_scene (ctx))
 );
 
 handler.on("message", async (ctx) => greeting(ctx))
 
-scene.command(scenes, async (ctx) => ctx.scene.enter(ctx.update["message"].text.replace('/', '')))
-scene.enter(async (ctx) => greeting(ctx))
+alphabet.enter(async (ctx) => greeting(ctx))
 
-scene.action("start", async (ctx) => {
+function later(delay) {
+    return new Promise(function (resolve) {
+        setTimeout(resolve, delay);
+    });
+}
+
+alphabet.action("start", async (ctx) => {
     ctx.answerCbQuery()
+    ctx.wizard.selectStep(1)
+    console.log(ctx.from.id)
+    await ctx.telegram.sendChatAction(ctx.from.id, 'typing')
+    await later(5000)
+    await ctx.editMessageText('Какой-то текст призывающий запомнить следующий материал')
+    await ctx.telegram.sendChatAction(ctx.from.id, 'typing')
+    await later(5000)
+    await ctx.reply('Буквы <b>в, к, ф, ц, ч, ш, щ, ъ</b>, используются только в русских именах и заимствованиях', { parse_mode: 'HTML' });
+    await ctx.telegram.sendChatAction(ctx.from.id, 'typing')
+    await later(5000)
+    await ctx.reply('б=[p], г=[k], ж=[ʃ], а з=[s]');
+    await ctx.telegram.sendChatAction(ctx.from.id, 'typing')
+    await later(5000)
+    await ctx.reply('полугласная - й')
+    await ctx.telegram.sendChatAction(ctx.from.id, 'typing')
+    await later(5000)
+    await ctx.reply('буква һ является согласной')
+    await ctx.telegram.sendChatAction(ctx.from.id, 'typing')
+    await later(5000)
+    await ctx.reply('н=[ŋ] перед г и x, а также в конце слов')
 })
 
-scene.action("back", async (ctx) => {
+alphabet.action("back", async (ctx) => {
     ctx.scene.enter('study')
     ctx.answerCbQuery()
 })
 
-export default scene
+export default alphabet

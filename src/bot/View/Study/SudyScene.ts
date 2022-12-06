@@ -81,12 +81,14 @@ study.enter(async (ctx) => greeting(ctx))
 study.action("start", async (ctx) => {
     return ctx.answerCbQuery()
 })
-study.action(/.*/, async (ctx) => {
+study.action(/.*/, async (ctx: MyContext) => {
     try {
         ctx.scene.enter(ctx.update["callback_query"].data)
     } catch (err) {
         console.log(err)
     }
+
+    ctx.answerCbQuery()
 })
 
 

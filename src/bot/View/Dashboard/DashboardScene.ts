@@ -1,4 +1,5 @@
 import { Composer, Markup, Scenes } from "telegraf";
+import { ExtraEditMessageText } from "telegraf/typings/telegram-types";
 import { MyContext } from "../../Model";
 import greeting from "./DashboardGreeting";
 require("dotenv").config()
@@ -41,19 +42,21 @@ const dashboard = new Scenes.WizardScene(
     "dashboard",
     handler,
     (async (ctx) => {
-        if (ctx.update["message"]) {
-            if (ctx.update["message"]) {
-                try {
-                    ctx.forwardMessage(process.env.channel_id).then(async () => {
-                        await ctx.reply("Спасибо за обратную связь! \nВаше сообщение получено")
-                        ctx.scene.enter("dashboard")
-                    })
-                } catch (err) {
-                    ctx.copyMessage(process.env.channel_id).then(async () => {
-                        await ctx.reply("Спасибо за обратную связь! \nВаше сообщение получено")
-                        ctx.scene.enter("dashboard")
-                    })
-                }
+
+        if (ctx.updateType == 'callback_query') {
+            ctx.wizard.selectStep(0)
+            await greeting(ctx)
+        }
+
+        if (ctx.updateType == 'message') {
+            try {
+
+                await ctx.reply("Спасибо за обратную связь! \nВаше сообщение получено")
+                ctx.scene.enter("dashboard")
+
+            } catch (err) {
+                await ctx.reply('Возникла непредвиденная ошибка')
+                ctx.scene.enter('dashboard')
             }
         }
     }),
@@ -107,14 +110,8 @@ const dashboard = new Scenes.WizardScene(
         }
     }),
     (async (ctx) => {
-        if (ctx.update["callback_query"]) {
-            if (ctx.update["callback_query"].data == "back") {
-                greeting(ctx)
-                ctx.answerCbQuery()
-            }
-        } else {
-            about_greeting(ctx)
-        }
+        ctx.wizard.selectStep(0)
+        await greeting(ctx)
     })
 );
 
@@ -124,6 +121,7 @@ dashboard.action("home", async (ctx) => {
     ctx.scene.enter("home")
     ctx.answerCbQuery()
 })
+
 handler.action("contact", async (ctx) => {
     ctx.wizard.next()
     ctx.editMessageText("Отправьте сообщение, администрация ответит в ближайшее время")
@@ -146,14 +144,24 @@ async function subcribe_greeting(ctx) {
 dashboard.action("about", async (ctx) => about_greeting(ctx))
 
 async function about_greeting(ctx) {
-    if (ctx.update["message"]) {
-        ctx.reply("О проекте ...", payment_extra)
-    } else {
-        ctx.wizard.selectStep(4)
-        // @ts-ignore
-        ctx.editMessageText('О проекте ...', payment_extra)
-        return ctx.answerCbQuery('О проекте')
+    let message = 'О проекте ...'
+    let extra: ExtraEditMessageText = {
+        parse_mode: 'HTML',
+        reply_markup: {
+            inline_keyboard: [
+                [
+                    {
+                        text: 'Назад',
+                        callback_data: 'back'
+                    }
+                ]
+            ]
+        }
     }
+
+    await ctx.editMessageText(message, extra).then(() => {
+        ctx.wizard.selectStep(4)
+    })
 }
 
 const invoice = {
@@ -190,7 +198,7 @@ async function payment_greeting(ctx) {
 }
 
 // Получаем название сцены из массива и переходим, если это команда
-dashboard.command(process.env.scenes.split(","), async (ctx) => ctx.scene.enter(ctx.update["message"].text.replace('/', '')))
+// dashboard.command(process.env.scenes.split(","), async (ctx) => ctx.scene.enter(ctx.update["message"].text.replace('/', '')))
 
 // Обработка входящих
 handler.on("message", async (ctx) => greeting(ctx))
