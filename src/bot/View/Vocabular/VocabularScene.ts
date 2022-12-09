@@ -35,6 +35,7 @@ const vocabular = new Scenes.WizardScene(
 
     // rules
     async (ctx: MyContext) => {
+        
         if (ctx.updateType == 'callback_query') {
             
             let rules = `Правила \n\n`
@@ -43,10 +44,19 @@ const vocabular = new Scenes.WizardScene(
             }
 
             if (ctx.update['callback_query'].data == 'rules') {
-                ctx.answerCbQuery()
                 await ctx.editMessageText(rules, extra)
                 await ctx.reply('Ознакомились с правилами?', Markup.keyboard([['Да, всё понятно']]).resize().oneTime())
+                return ctx.answerCbQuery()
             }
+
+            if (ctx.update["callback_query"].data == 'back') {
+                await greeting_vocabular(ctx)
+                ctx.wizard.selectStep(0)
+                return ctx.answerCbQuery()
+            }
+
+            return ctx.answerCbQuery('Данной команды не найдено')
+            
         }
 
         if (ctx.updateType == 'message') {
@@ -54,8 +64,12 @@ const vocabular = new Scenes.WizardScene(
             // проверка
             if (ctx.update['message'].text == 'Да, всё понятно') {
                 Markup.removeKeyboard()
+                await vocabular_services.reset_middleware(ctx)
                 await ctx.reply('Отправьте слово')
                 ctx.wizard.next()
+            } else {
+                let message = 'Пожалуйста, ознакомтесь с правилами'
+                await ctx.reply(message, Markup.keyboard([['Да, всё понятно']]).resize().oneTime())
             }
             
         }
@@ -72,16 +86,41 @@ const vocabular = new Scenes.WizardScene(
             }
 
             await vocabular_services.insert_middleware(ctx)
-            await ctx.reply(`<b>${word}</b> записан в базу данных`, extra)
-            await ctx.reply(`<b>Теперь отправьте перевод к веденному тексту:</b> ${word}`, extra)
+            await vocabular_services.get_translates(ctx).then(async (result) => {
+                if (result) {
+
+                    if (result.length) {
+                        await ctx.reply(`<b>${word}</b> существует в базе данных`, extra)
+                        let str: string = ``
+
+                        result.forEach(async (element: string) => {
+                            str = str + element
+                        })
+
+                        await ctx.reply(str, extra)
+                        await ctx.reply(`<b>Можете отправить перевод к веденному тексту:</b> ${word}`, extra)
+                    } else {
+                        await ctx.reply(`<b>${word}</b> записан в базу данных`, extra)
+                        await ctx.reply(`<b>Теперь отправьте перевод к веденному тексту:</b> ${word}`, extra)
+                    }
+
+
+                } else {
+                    await ctx.reply(`<b>${word}</b> записан в базу данных`, extra)
+                    await ctx.reply(`<b>Теперь отправьте перевод к веденному тексту:</b> ${word}`, extra)
+                }
+            })
 
             ctx.wizard.next()
+            
         }
 
     },
 
     async (ctx: MyContext) => {
 
+
+        // Пользователь отправляет перевод слова
         if (ctx.updateType == 'message') {
 
             let word = ctx.update['message'].text
@@ -90,11 +129,56 @@ const vocabular = new Scenes.WizardScene(
             }
 
             await vocabular_services.insert_middleware_translate(ctx)
+            await vocabular_services.save_translate(ctx)
             await vocabular_services.get_middleware(ctx)
                 .then(async (user: IUser) => {
-                    console.log(user.middleware)
+                    if (user.middleware.word) {
+
+                        let words_count = user.middleware.word.split(' ').length
+                        let message: string
+
+                        if (words_count > 1) {
+                            message = 'Фраза'
+                        } else {
+                            message = 'Слово'
+                        }
+
+                        let extra: ExtraEditMessageText = {
+                            parse_mode: 'HTML',
+                            reply_markup: {
+                                inline_keyboard: [
+                                    [
+                                        {
+                                            text: 'Завершить добавление слов',
+                                            callback_data: 'end'
+                                        }
+                                    ]
+                                ]
+                            }
+                        }
+
+                        await ctx.reply(`${message} <b>${user.middleware.word}</b> имеет количество вариантов перевода: ${user.middleware.translate.length}`, extra)
+                    }
                 })
+
         }
+        
+        // Пользователь нажимает на кнопку Завершить добавление слов
+        if (ctx.updateType == 'callback_query') {
+            let data = ctx.update["callback_query"].data
+
+            if (data == 'end') {
+
+                await greeting_vocabular(ctx)
+                ctx.wizard.selectStep(0)
+                return ctx.answerCbQuery('Перевод сохранён в базу данных')
+            }
+
+            ctx.answerCbQuery('Команда не найдена')
+
+        }
+
+        // проверка на существование, далее обработка!
 
     }
 );

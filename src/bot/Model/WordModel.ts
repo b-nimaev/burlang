@@ -11,3 +11,4 @@ const wordSchema = new Schema<IWord>({
 })
 
 const WordModel = model<IWord>('translates', wordSchema)
+export default WordModel
