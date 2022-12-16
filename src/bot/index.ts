@@ -35,7 +35,7 @@ const express = require("express")
 const token = process.env.token
 
 if (token === undefined) {
-    throw new Error('BOT_TOKEN must be provided!')
+     throw new Error('BOT_TOKEN must be provided!')
 }
 
 

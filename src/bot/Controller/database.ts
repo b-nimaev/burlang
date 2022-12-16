@@ -1,4 +1,4 @@
-import mongoose, { connect, model, Schema } from 'mongoose';
+import { model, Schema } from 'mongoose';
 import { User } from 'telegraf/typings/core/types/typegram';
 import { ExtraReplyMessage } from 'telegraf/typings/telegram-types';
 import bot from '..';

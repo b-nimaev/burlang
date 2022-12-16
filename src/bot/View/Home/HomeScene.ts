@@ -1,8 +1,8 @@
 import { Composer, Scenes } from "telegraf";
 import { ExtraReplyMessage } from "telegraf/typings/telegram-types";
-import vocabular_services from "../../Controller/vocabular";
+import UserConrtoller from "../../Controller/User/UserController";
 import { MyContext } from "../../Model";
-import { IUser } from "../../Model/UserModel";
+import IUser from "../../Model/User/IUserModel";
 require("dotenv").config();
 
 let partials: Array<string> = ["alphabet", "soundsAndLetters", "wordFormation", "partsOfSpeech", "cases", "verbs", "sentences", "negation", "home"]
@@ -17,8 +17,10 @@ const home = new Scenes.WizardScene(
 async function select_gender (ctx: MyContext) {
     try {
         if (ctx.updateType == 'callback_query') {
-            await vocabular_services.update_gender(ctx)
+            await UserConrtoller.update_gender(ctx)
             ctx.answerCbQuery()
+            await greeting(ctx)
+            ctx.wizard.selectStep(1)
         }
     } catch (err) {
         // err
@@ -47,8 +49,8 @@ export function greeting(ctx: MyContext) {
 }
 home.start(async (ctx) => {
     try {
-        await vocabular_services.save_user(ctx)
-        await vocabular_services.check_gender(ctx)
+        await UserConrtoller.save_user(ctx)
+        await UserConrtoller.check_gender(ctx)
             .then(async (user: IUser) => {
 
                 // Проверка на существование поля пол

@@ -1,4 +1,3 @@
-import { getStatusSubscription } from "../../Controller/dashboard"
 import { MyContext } from "../../Model"
 
 const extra = {
