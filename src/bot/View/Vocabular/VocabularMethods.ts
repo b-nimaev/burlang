@@ -1,12 +1,10 @@
 import { Markup } from "telegraf";
 import { ExtraEditMessageText } from "telegraf/typings/telegram-types";
-import { runInContext } from "vm";
 import UserConrtoller from "../../Controller/User/UserController";
 import VocbularController from "../../Controller/Vocabular/VocabularController";
 import { MyContext } from "../../Model";
-import ModerationModel, { ModerationInterface } from "../../Model/Moderation/IModeration";
+import { ModerationInterface } from "../../Model/Moderation/IModeration";
 import { IRussianTranslate, IRussianTranslates } from "../../Model/Translate/IRussianTranslates";
-import { ITranslate } from "../../Model/Translate/ITranslateModel";
 
 export default class vocabular_scene {
     
