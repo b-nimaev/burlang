@@ -12,8 +12,7 @@ const subscribe_extra = {
                 {
                     text: 'Оформить подписку',
                     callback_data: 'subscribe'
-                },
-                {
+                }], [{
                     text: 'Назад',
                     callback_data: 'back'
                 }
@@ -164,13 +163,14 @@ async function about_greeting(ctx) {
     })
 }
 
+let text = 'Изучение Бурятского языка никогда не давалось так просто с этой подпиской 😁👍'
+
 const invoice = {
-    provider_token: process.env.PROVIDER_TOKEN,
+    provider_token: '381764678:TEST:39383',
     start_parameter: 'time-machine-sku',
-    title: 'Working Time Machine',
-    description: 'Want to visit your great-great-great-grandparents? Make a fortune at the races? Shake hands with Hammurabi and take a stroll in the Hanging Gardens? Order our Working Time Machine today!',
+    title: 'Оформление подписки',
+    description: text,
     currency: 'RUB',
-    photo_url: 'https://img.clipartfest.com/5a7f4b14461d1ab2caaa656bcee42aeb_future-me-fredo-and-pidjin-the-webcomic-time-travel-cartoon_390-240.png',
     is_flexible: true,
     prices: [
         { label: 'Working Time Machine', amount: 10000 }

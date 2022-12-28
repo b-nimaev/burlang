@@ -3,8 +3,10 @@ import { ExtraEditMessageText } from "telegraf/typings/telegram-types";
 import UserConrtoller from "../../Controller/User/UserController";
 import VocbularController from "../../Controller/Vocabular/VocabularController";
 import { MyContext } from "../../Model";
-import { ModerationInterface } from "../../Model/Moderation/IModeration";
+import ModerationModel, { ModerationInterface } from "../../Model/Moderation/IModeration";
 import { IRussianTranslate, IRussianTranslates } from "../../Model/Translate/IRussianTranslates";
+import { ITranslate } from "../../Model/Translate/ITranslateModel";
+import { ObjectId } from "mongodb";
 
 export default class vocabular_scene {
     
@@ -60,13 +62,37 @@ export default class vocabular_scene {
 
     static async moderation (ctx: MyContext) {
         try {
+
             if (await VocbularController.check_on_exists_moderation(ctx)) {
+
                 return ctx.answerCbQuery('У вас нет слов на модерации')
+
             } else {
                 
                 let words = await VocbularController.get_words_on_moderation(ctx)
-                let message = 'Слова на проверке \n\n'
-                message += `<b>Найдено: ${words.length}</b>`
+                let message = 'Слова на проверке \n'
+                let pages_per_row = 4
+                let posts_per_page = 5
+
+                let activePage: number | false = await VocbularController.get_page(ctx)
+                let words_on_page: string[]
+
+                if (activePage) {
+                    message += `Страница ${activePage}/${Math.ceil(words.length / posts_per_page)} \n`
+                    words_on_page = await VocbularController.get_words_for_page(ctx, posts_per_page, activePage)
+                } else {
+                    message += `Страница 1/${Math.ceil(words.length / posts_per_page)} \n`
+                    words_on_page = await VocbularController.get_words_for_page(ctx, posts_per_page, 0)
+                }
+
+                message += `<b>Найдено: ${words.length}</b> \n\n`
+                
+                for (let i = 0; words_on_page.length > i; i++) {
+                    
+                    let word: ModerationInterface = await VocbularController.get_word_on_moderation(ctx, words_on_page[i])
+                    message += `${i}) ${word.russian_translate.name} — ${word.buryat_translate.name}\n`
+                }
+
                 let extra: ExtraEditMessageText = {
                     parse_mode: 'HTML',
                     reply_markup: {
@@ -75,17 +101,7 @@ export default class vocabular_scene {
                 }
 
                 let row = []
-                
-                let posts_per_page = 5
-                let pages_per_row = 4
 
-                let activePage: number | false = await VocbularController.get_page(ctx)
-                
-                if (activePage) {
-                    VocbularController.get_words_for_page(ctx, posts_per_page, activePage)
-                } else {
-                    VocbularController.get_words_for_page(ctx, posts_per_page, 0)
-                }
 
                 for (let i = 0; i < Math.ceil(words.length / posts_per_page); i++) {
                     
@@ -95,7 +111,7 @@ export default class vocabular_scene {
                         // extra.reply_markup.inline_keyboard.push(row)
                     }
                     
-                    if (activePage) {
+                    if (activePage == i) {
                         row.push({
                             text: `${i + 1}`,
                             callback_data: `page active`
@@ -107,6 +123,8 @@ export default class vocabular_scene {
                         })
                     }
                 }
+                
+                console.log(row)
 
                 let arrows = []
                 arrows.push({
@@ -138,15 +156,31 @@ export default class vocabular_scene {
         try {
             if (ctx.updateType == 'callback_query') {
 
+
+                // если нажатая кнопка является элементом пагинации
+                if (ctx.update["callback_query"].data.indexOf('active') !== -1) {
+                    return ctx.answerCbQuery('Вы на этой странице')
+                }
+
                 if (ctx.update["callback_query"].data.indexOf('page') == 0) {
-                    
+                    console.log(ctx.update["callback_query"].data)
+                    await VocbularController.set_page(ctx)
+
                     let page = parseInt(ctx.update["callback_query"].data.split(' ')[1])
                     let posts_per_page = 5
                     let words_on_page = await VocbularController.get_words_for_page(ctx, posts_per_page, page - 1)
 
                     let words = await VocbularController.get_words_on_moderation(ctx)
                     let message = 'Слова на проверке \n'
-                    message += `<b>Показано: ${words_on_page.length}/${words.length}</b>`
+                    let activePage: number | false = await VocbularController.get_page(ctx)
+
+                    if (activePage) {
+                        message += `Страница ${activePage}/${Math.ceil(words.length / posts_per_page)} \n`
+                    } else {
+                        message += `Страница ${page * posts_per_page} - ${page * posts_per_page + posts_per_page}/${Math.ceil(words.length / posts_per_page)} \n`
+                    }
+
+                    message += `<b>Показано: ${posts_per_page * page + 1 - posts_per_page}-${((posts_per_page) * page) - (posts_per_page - words_on_page.length) }/${words.length}</b>`
                     let extra: ExtraEditMessageText = {
                         parse_mode: 'HTML',
                         reply_markup: {
@@ -154,7 +188,6 @@ export default class vocabular_scene {
                         }
                     }
 
-                    let activePage: number | false = await VocbularController.get_page(ctx)
                     let row = []
 
                     let pages_per_row = 4
@@ -166,11 +199,18 @@ export default class vocabular_scene {
                             // extra.reply_markup.inline_keyboard.push(row)
                         }
 
-                        if (activePage) {
-                            row.push({
-                                text: `${i + 1}`,
-                                callback_data: `page active`
-                            })
+                        if (page) {
+                            if (page - 1 == i) {
+                                row.push({
+                                    text: `${page}`,
+                                    callback_data: `page active`
+                                })
+                            } else {
+                                row.push({
+                                    text: `${i + 1}`,
+                                    callback_data: `page ${i + 1}`
+                                })
+                            }
                         } else {
                             row.push({
                                 text: `${i + 1}`,
@@ -184,7 +224,7 @@ export default class vocabular_scene {
                     for (let i = 0; i < words_on_page.length; i++) {
 
                         let word: ModerationInterface = await VocbularController.get_word_on_moderation(ctx, words_on_page[i])
-                        message += `${i + 1}) ${word.buryat_translate.name} — ${word.russian_translate.name} \n`
+                        message += `${((posts_per_page * page) - posts_per_page) + i + 1}) ${word.buryat_translate.name} — ${word.russian_translate.name} \n`
 
                     }
 
@@ -206,6 +246,22 @@ export default class vocabular_scene {
         } catch (err) {
             console.log(err)
         }
+    }
+
+    static async remove_moderation (ctx: MyContext, str: string) {
+        
+        try {
+
+            await ModerationModel.findByIdAndDelete({
+                _id: new ObjectId(str)
+            })
+
+        } catch (err) {
+            
+            console.log(err)
+        
+        }
+
     }
 
     static async rules (ctx: MyContext) {

@@ -28,6 +28,7 @@ async function select_gender (ctx: MyContext) {
 }
 
 export function greeting(ctx: MyContext) {
+
     const extra = {
         parse_mode: 'HTML',
         reply_markup: {
@@ -41,12 +42,13 @@ export function greeting(ctx: MyContext) {
             ]
         }
     }
-
+    
     let message = `Самоучитель бурятского языка \n\nКаждое взаимодействие с ботом, \nвлияет на сохранение и дальнейшее развитие <b>Бурятского языка</b> \n\nВыберите раздел, чтобы приступить`
 
     // @ts-ignore
-    ctx.update["message"] ? ctx.reply(message, extra) : ctx.editMessageText(message, extra)
+    return ctx.update["message"] ? ctx.reply(message, extra) : ctx.editMessageText(message, extra)
 }
+
 home.start(async (ctx) => {
     try {
         await UserConrtoller.save_user(ctx)

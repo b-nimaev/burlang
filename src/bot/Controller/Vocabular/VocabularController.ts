@@ -240,6 +240,21 @@ class VocbularController {
         })
     }
 
+    static async set_page (ctx: MyContext) {
+        try {
+            await UserModel.findOneAndUpdate({
+                id: ctx.from.id
+            }, {
+                $set: {
+                    'vocabular.page': parseInt(ctx.update["callback_query"].data.split(' ')[1])
+                }
+            })
+        } catch (err) {
+            // err
+            console.log(err)
+        }
+    }
+
     static async get_page (ctx: MyContext) {
         return await UserModel.findOne({
             id: ctx.from.id
