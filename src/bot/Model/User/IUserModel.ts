@@ -1,4 +1,4 @@
-import { User } from 'telegraf/typings/core/types/typegram'
+import { User } from 'telewgraf/typings/core/types/typegram'
 import { ModerationInterface } from '../Moderation/IModeration'
 import { ITranslate } from '../Translate/ITranslateModel'
 
@@ -12,6 +12,9 @@ interface IUser extends User {
     },
     settings: {
         rules: boolean
+    },
+    access1: {
+        moderation: boolean
     }
 }
 
