@@ -10,13 +10,15 @@ import dashboard from './View/Dashboard/DashboardScene';
 import { database } from './Controller/database';
 import vocabular from './View/Vocabular/VocabularScene';
 import { connect } from 'mongoose';
-let uri = 'mongodb://127.0.0.1:27017'
+import moderation from './View/ModerationScene/ModerationScene';
+let uri = process.env.db__localhost
 
 export async function run() {
     // 4. Connect to MongoDB
-    await connect(uri + "/burlang");
+    await connect(uri, { dbName: 'burlang' })
 }
 run()
+
 // SSL
 const fs = require('fs');
 const key = fs.readFileSync('./ssl/localhost.decrypted.key');
@@ -40,7 +42,7 @@ if (token === undefined) {
 
 
 // Init scenes & set secretPath for requires from bot
-const scenes = [home, dashboard, vocabular, study, alphabet]
+const scenes = [home, dashboard, vocabular, study, moderation, alphabet]
 export const bot = new Telegraf<MyContext>(token)
 
 export default bot

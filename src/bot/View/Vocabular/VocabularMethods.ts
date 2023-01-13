@@ -5,7 +5,6 @@ import VocbularController from "../../Controller/Vocabular/VocabularController";
 import { MyContext } from "../../Model";
 import ModerationModel, { ModerationInterface } from "../../Model/Moderation/IModeration";
 import { IRussianTranslate, IRussianTranslates } from "../../Model/Translate/IRussianTranslates";
-import { ITranslate } from "../../Model/Translate/ITranslateModel";
 import { ObjectId } from "mongodb";
 
 export default class vocabular_scene {
@@ -243,6 +242,12 @@ export default class vocabular_scene {
 
                 ctx.answerCbQuery()
             }
+
+            if (ctx.updateType == 'message') {
+                console.log(ctx.update['message'].text)
+                // await vocabular_scene.remove_moderation(ctx)
+            }
+
         } catch (err) {
             console.log(err)
         }

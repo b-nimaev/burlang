@@ -20,7 +20,7 @@ async function select_gender (ctx: MyContext) {
             await UserConrtoller.update_gender(ctx)
             ctx.answerCbQuery()
             await greeting(ctx)
-            ctx.wizard.selectStep(1)
+            ctx.wizard.selectStep(0)
         }
     } catch (err) {
         // err
@@ -38,6 +38,7 @@ export function greeting(ctx: MyContext) {
                     { text: "Словарь", callback_data: "vocabular" }
                 ],
                 [{ text: 'Переводчик', callback_data: 'translater' }],
+                [{ text: 'Модерация', callback_data: 'moderation' }],
                 [{ text: "Личный кабинет", callback_data: "dashboard" }]
             ]
         }
@@ -51,7 +52,9 @@ export function greeting(ctx: MyContext) {
 
 home.start(async (ctx) => {
     try {
-        await UserConrtoller.save_user(ctx)
+        await UserConrtoller.save_user(ctx).catch(err => {
+            ctx.wizard.selectStep(1)
+        })
         await UserConrtoller.check_gender(ctx)
             .then(async (user: IUser) => {
 
@@ -121,6 +124,15 @@ handler.action(/./, async (ctx) => {
             return ctx.scene.enter("vocabular")
         }
 
+        if (callback_data == 'moderation') {
+            let res = await UserConrtoller.moderation_privilege(ctx)
+            if (!res) {
+                return ctx.answerCbQuery(`Нет доступа 🔐`)
+            } else {
+                ctx.answerCbQuery()
+                return ctx.scene.enter('moderation')
+            }
+        }
 
         ctx.answerCbQuery(`Нет доступа 🔐`)
 

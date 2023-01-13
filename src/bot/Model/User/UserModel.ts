@@ -17,6 +17,9 @@ const userSchema = new Schema<IUser>({
     settings: {
         rules: { type: Boolean, required: false }
     },
+    access1: {
+        moderation: { type: Boolean, required: false }
+    }
 }, {
     timestamps: true
 })

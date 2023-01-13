@@ -8,7 +8,7 @@ export interface ITranslate {
 }
 
 export const translateSchema = new Schema<ITranslate>({
-    buryat_translate: { type: buryatTranslateSchema, required: false, unique: true },
+    buryat_translate: { type: buryatTranslateSchema, required: false, unique: false },
     russian_translates: { type: russianTranslatesSchema, required: false, unique: false }
 }, {
     timestamps: true

@@ -78,4 +78,20 @@ export default class UserConrtoller {
         }
         
     }
+
+    static async moderation_privilege (ctx: MyContext) {
+        try {
+            return await UserModel.findOne({
+                id: ctx.from.id
+            }).then(async (user: IUser) => {
+                if (user.access1.moderation) {
+                    return true
+                } else {
+                    return false
+                }
+            })
+        } catch (err) {
+            console.log(err)
+        }
+    }
 }
