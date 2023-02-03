@@ -50,6 +50,7 @@ class VocbularController {
     static async insert_middleware_translate(ctx: MyContext) {
         try {
 
+            // customer --> Пользователь который добавил русский перевод
             let customer = new CustomerModel({
                 userID: ctx.from.id
             })
@@ -236,6 +237,19 @@ class VocbularController {
             // console.log('Начало: ' + page * posts_per_page, 'Конец: ' + (((page + 1) * posts_per_page)))
             let posts = user.vocabular.on_moderation.slice(page * posts_per_page, (posts_per_page * (page +1)))
             // console.log(posts.length)
+            return posts
+        })
+    }
+
+    static async get_words_for_page_fixed(ctx: MyContext, posts_per_page: number, page: number ) {
+        return await UserModel.findOne({
+            id: ctx.from.id
+        }).then(async (user: IUser) => {
+            // console.log('Начало: ' + page * posts_per_page, 'Конец: ' + (((page + 1) * posts_per_page)))
+            console.log('page: ' + page)
+            console.log('posts per page:' + posts_per_page)
+            let posts = user.vocabular.on_moderation.slice(page * posts_per_page, (posts_per_page * (page + 1)))
+            console.log(posts)
             return posts
         })
     }

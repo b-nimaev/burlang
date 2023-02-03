@@ -9,11 +9,89 @@ import vocabular_scene from "../../View/Vocabular/VocabularMethods"
 
 export default class UserConrtoller {
 
-    static async save_user(ctx: MyContext) {
+    static async get_user (ctx: MyContext) {
+        
         try {
-            await new UserModel(ctx.from).save()
+
+            return await UserModel.findOne({
+                id: ctx.from.id
+            })
+
         } catch (err) {
             console.log(err)
+        }
+    }
+
+    static async save_user(ctx: MyContext) {
+        try {
+
+            let user: IUser = {
+                id: ctx.from.id,
+                is_bot: ctx.from.is_bot,
+                first_name: ctx.from.first_name,
+                username: ctx.from.username,
+                male: 'later',
+                middleware: null,
+                settings: {
+                    rules: false
+                },
+                access1: {
+                    moderation: false
+                },
+                subscribe: false,
+                vocabular: {
+                    on_moderation: [],
+                    page: 0
+                }
+            }
+
+            await new UserModel(user).save()
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    static async save_selected_word(ctx: MyContext, str: string) {
+        try {
+
+            await UserModel.findOneAndUpdate({
+                id: ctx.from.id
+            }, {
+                $set: {
+                    "selected_string": str
+                }
+            })
+
+        } catch (err) {
+
+        }
+    }
+
+    static async delete_selected_word(ctx: MyContext) {
+        try {
+
+            let user: IUser = await this.get_user(ctx)
+
+            console.log(user.selected_string)
+
+            await UserModel.findOneAndUpdate({
+                id: ctx.from.id
+            }, {
+                $pull: {
+                    "vocabular.on_moderation": user.selected_string
+                }
+            })
+
+            await UserModel.findOneAndUpdate({
+                id: ctx.from.id
+            }, {
+                $unset: {
+                    "selected_string": ""
+                }
+            })
+
+        } catch (err) {
+
         }
     }
 

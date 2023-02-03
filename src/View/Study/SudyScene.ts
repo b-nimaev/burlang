@@ -74,9 +74,12 @@ const study = new Scenes.WizardScene(
 
 handler.on("message", async (ctx) => greeting(ctx))
 
-study.command("dashboard", async (ctx) => ctx.scene.enter("dashboard"))
-study.command("vocabular", async (ctx) => ctx.scene.enter("vocabular"))
-study.command("home", async (ctx) => ctx.scene.enter("home"))
+study.command('home', async (ctx) => ctx.scene.enter('home'))
+study.command('vocabular', async (ctx) => ctx.scene.enter('vocabular'))
+study.command('study', async (ctx) => ctx.scene.enter('study'))
+study.command('dashboard', async (ctx) => ctx.scene.enter('dashboard'))
+study.command('back', async (ctx) => ctx.scene.enter('study'))
+
 study.enter(async (ctx) => greeting(ctx))
 study.action("start", async (ctx) => {
     return ctx.answerCbQuery()

@@ -4,9 +4,10 @@ import buryatTranslateSchema, { IBuryatTranslate } from "../Translate/IBuryatTra
 import { IRussianTranslate, russianTranslateScehma } from "../Translate/IRussianTranslates";
 
 export interface ModerationInterface {
+    createdAt: any;
     buryat_translate: IBuryatTranslate,
     russian_translate: IRussianTranslate,
-    customer: ICustomer
+    customer: ICustomer,
 }
 
 const ModerationSchema = new Schema<ModerationInterface>({

@@ -1,8 +1,9 @@
-import { Composer, Markup, Scenes } from "telegraf";
 import { ExtraEditMessageText } from "telegraf/typings/telegram-types";
+import { Composer, Scenes } from "telegraf";
 import { MyContext } from "../../Model";
 import greeting from "./DashboardGreeting";
 require("dotenv").config()
+
 const subscribe_message = `<b>Личный кабинет / Подписка</b>`;
 const subscribe_extra = {
     parse_mode: 'HTML',
@@ -141,6 +142,12 @@ async function subcribe_greeting(ctx) {
 }
 
 dashboard.action("about", async (ctx) => about_greeting(ctx))
+
+dashboard.command('home', async (ctx) => ctx.scene.enter('home'))
+dashboard.command('vocabular', async (ctx) => ctx.scene.enter('vocabular'))
+dashboard.command('study', async (ctx) => ctx.scene.enter('study'))
+dashboard.command('dashboard', async (ctx) => ctx.scene.enter('dashboard'))
+dashboard.command('back', async (ctx) => ctx.scene.enter('dashboard'))
 
 async function about_greeting(ctx) {
     let message = 'О проекте ...'

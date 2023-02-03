@@ -15,11 +15,13 @@ const userSchema = new Schema<IUser>({
         page: { type: Number, required: false }
     },
     settings: {
-        rules: { type: Boolean, required: false }
+        rules: { type: Boolean, required: true }
     },
     access1: {
-        moderation: { type: Boolean, required: false }
-    }
+        moderation: { type: Boolean, required: true }
+    },
+    subscribe: { type: Boolean, required: true },
+    selected_string: { type: String, required: false }
 }, {
     timestamps: true
 })

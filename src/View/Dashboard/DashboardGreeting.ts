@@ -7,22 +7,21 @@ const extra = {
                 {
                     text: 'О проекте',
                     callback_data: 'about'
-                },
+                }
+            ], [
                 {
-                    text: 'Подписка',
+                    text: 'Поддержка проекта',
                     callback_data: 'subscription'
                 }
             ],
             [
                 {
+                    text: 'Назад',
+                    callback_data: 'home'
+                },
+                {
                     text: 'Обратная связь',
                     callback_data: 'contact'
-                },
-            ],
-            [
-                {
-                    text: 'На главную',
-                    callback_data: 'home'
                 }
             ],
         ]

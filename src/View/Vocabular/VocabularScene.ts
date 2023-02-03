@@ -16,7 +16,9 @@ const vocabular = new Scenes.WizardScene(
 
     async (ctx: MyContext) => await vocabular_scene.set_translates(ctx),
     
-    async (ctx: MyContext) => await vocabular_scene.moderation_handler(ctx)
+    async (ctx: MyContext) => await vocabular_scene.moderation_handler(ctx),
+
+    async (ctx: MyContext) => await vocabular_scene.word_handler(ctx)
 );
 
 vocabular.enter(async (ctx) => vocabular_scene.greeting(ctx))

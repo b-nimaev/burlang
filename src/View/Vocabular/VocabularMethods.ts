@@ -6,12 +6,16 @@ import { MyContext } from "../../Model";
 import ModerationModel, { ModerationInterface } from "../../Model/Moderation/IModeration";
 import { IRussianTranslate, IRussianTranslates } from "../../Model/Translate/IRussianTranslates";
 import { ObjectId } from "mongodb";
+import IUser from "../../Model/User/IUserModel";
 
 export default class vocabular_scene {
-    
-    static async greeting (ctx: MyContext) {
 
-        let message: string = `Словарь \n\n`
+    static async greeting(ctx: MyContext) {
+
+        let message: string = `Словарь представляет собой набор слов и их определений. \n\n<b>Это важный справочный инструмент для людей</b>, `
+        message += `изучающих новый язык или ищущих значение незнакомого слова. \n`
+        // message += `<i>Словарь помогает людям расширить словарный запас и улучшить понимание языка.</i>`
+
         const extra: ExtraEditMessageText = {
             parse_mode: 'HTML',
             reply_markup: {
@@ -30,12 +34,12 @@ export default class vocabular_scene {
                     ],
                     [
                         {
-                            text: 'Настройки',
-                            callback_data: 'settings'
+                            text: 'Назад',
+                            callback_data: 'home'
                         },
                         {
-                            text: 'На главную',
-                            callback_data: 'home'
+                            text: 'Настройки',
+                            callback_data: 'settings'
                         },
                     ],
                 ]
@@ -49,25 +53,29 @@ export default class vocabular_scene {
                 ctx.editMessageText(message, extra)
                 ctx.answerCbQuery()
                 ctx.wizard.selectStep(0)
-                
+
             } else if (ctx.updateType == 'message') {
                 ctx.reply(message, extra)
             }
-        
+
         } catch (err) {
             console.log(err)
         }
     }
 
-    static async moderation (ctx: MyContext) {
+    static async moderation(ctx: MyContext) {
         try {
 
             if (await VocbularController.check_on_exists_moderation(ctx)) {
 
+                if (ctx.scene.session.cursor) {
+                    ctx.scene.enter('vocabular')
+                }
+
                 return ctx.answerCbQuery('У вас нет слов на модерации')
 
             } else {
-                
+
                 let words = await VocbularController.get_words_on_moderation(ctx)
                 let message = 'Слова на проверке \n'
                 let pages_per_row = 4
@@ -78,18 +86,24 @@ export default class vocabular_scene {
 
                 if (activePage) {
                     message += `Страница ${activePage}/${Math.ceil(words.length / posts_per_page)} \n`
-                    words_on_page = await VocbularController.get_words_for_page(ctx, posts_per_page, activePage)
+
+                    activePage--
+
+                    words_on_page = await VocbularController.get_words_for_page_fixed(ctx, posts_per_page, activePage)
+                    console.log(words_on_page)
                 } else {
                     message += `Страница 1/${Math.ceil(words.length / posts_per_page)} \n`
                     words_on_page = await VocbularController.get_words_for_page(ctx, posts_per_page, 0)
                 }
 
                 message += `<b>Найдено: ${words.length}</b> \n\n`
-                
+
                 for (let i = 0; words_on_page.length > i; i++) {
-                    
+
                     let word: ModerationInterface = await VocbularController.get_word_on_moderation(ctx, words_on_page[i])
-                    message += `${i}) ${word.russian_translate.name} — ${word.buryat_translate.name}\n`
+                    if (activePage) {
+                        message += `${((activePage) * posts_per_page) + 1 + i}) ${word.russian_translate.name} — ${word.buryat_translate.name}\n`
+                    }
                 }
 
                 let extra: ExtraEditMessageText = {
@@ -103,14 +117,14 @@ export default class vocabular_scene {
 
 
                 for (let i = 0; i < Math.ceil(words.length / posts_per_page); i++) {
-                    
-                    if (i % pages_per_row == 0) {
+
+                    if (i % pages_per_row == 0 && Math.ceil(words.length / posts_per_page) > 1) {
                         row = []
                         extra.reply_markup.inline_keyboard.push(row)
                         // extra.reply_markup.inline_keyboard.push(row)
                     }
-                    
-                    if (activePage == i) {
+
+                    if (activePage == i - 1) {
                         row.push({
                             text: `${i + 1}`,
                             callback_data: `page active`
@@ -122,14 +136,14 @@ export default class vocabular_scene {
                         })
                     }
                 }
-                
+
                 console.log(row)
 
                 let arrows = []
                 arrows.push({
-                        text: 'Предыдущая страница',
-                        callback_data: 'prev'
-                    })
+                    text: 'Предыдущая страница',
+                    callback_data: 'prev'
+                })
                 arrows.push({
                     text: 'Следующая страница',
                     callback_data: 'next'
@@ -137,10 +151,20 @@ export default class vocabular_scene {
 
                 // extra.reply_markup.inline_keyboard.push(arrows)
                 extra.reply_markup.inline_keyboard.push([{
-                    text: '« назад',
+                    // text: '« назад',
+                    text: 'Назад',
                     callback_data: 'back'
                 }])
-                await ctx.editMessageText(message, extra)
+
+                let temp: ModerationInterface = await VocbularController.get_word_on_moderation(ctx, words_on_page[2])
+
+                message += `\nОтправьте <b>номер</b> строки, чтобы отредактировать его`
+                // message += `\nНапример чтобы получить <i><pre>3) ${temp.russian_translate.name} — ${temp.buryat_translate.name}, надо отправить сообщение содержащее 3</pre></i>`
+                if (ctx.updateType == 'callback_query') {
+                    await ctx.editMessageText(message, extra)
+                } else if (ctx.updateType == 'message') {
+                    await ctx.reply(message, extra)
+                }
 
                 ctx.answerCbQuery()
                 ctx.wizard.selectStep(4)
@@ -151,7 +175,7 @@ export default class vocabular_scene {
         }
     }
 
-    static async moderation_handler (ctx: MyContext) {
+    static async moderation_handler(ctx: MyContext) {
         try {
             if (ctx.updateType == 'callback_query') {
 
@@ -179,7 +203,7 @@ export default class vocabular_scene {
                         message += `Страница ${page * posts_per_page} - ${page * posts_per_page + posts_per_page}/${Math.ceil(words.length / posts_per_page)} \n`
                     }
 
-                    message += `<b>Показано: ${posts_per_page * page + 1 - posts_per_page}-${((posts_per_page) * page) - (posts_per_page - words_on_page.length) }/${words.length}</b>`
+                    message += `<b>Показано: ${posts_per_page * page + 1 - posts_per_page}-${((posts_per_page) * page) - (posts_per_page - words_on_page.length)}/${words.length}</b>`
                     let extra: ExtraEditMessageText = {
                         parse_mode: 'HTML',
                         reply_markup: {
@@ -219,7 +243,7 @@ export default class vocabular_scene {
                     }
 
                     message += '\n\n'
-                    
+
                     for (let i = 0; i < words_on_page.length; i++) {
 
                         let word: ModerationInterface = await VocbularController.get_word_on_moderation(ctx, words_on_page[i])
@@ -231,6 +255,8 @@ export default class vocabular_scene {
                         text: '« назад',
                         callback_data: 'back'
                     }])
+
+                    message += `\nОтправьте <b>номер</b> строки, чтобы отредактировать его`
 
                     await ctx.editMessageText(message, extra)
                     ctx.answerCbQuery()
@@ -244,8 +270,55 @@ export default class vocabular_scene {
             }
 
             if (ctx.updateType == 'message') {
-                console.log(ctx.update['message'].text)
-                // await vocabular_scene.remove_moderation(ctx)
+
+                let index: number = parseFloat(ctx.update["message"].text)
+                let all_words = await VocbularController.get_words_on_moderation(ctx)
+
+                if (index < 1) {
+                    await ctx.reply('Вы ввели недопустимое значение!')
+                    return await this.moderation(ctx)
+                }
+
+                if (index > all_words.length) {
+                    await ctx.reply('Вы ввели значение превышающее количества ваших слов находящихся на проверке')
+                    return await this.moderation(ctx)
+                }
+
+                if (isNaN(index)) {
+                    await ctx.reply(`Пожалуйста, отправьте числовое значение в пределах <b>от 1 до ${all_words.length}</b>`, { parse_mode: 'HTML' })
+                    return await this.moderation(ctx)
+                }
+
+                let words: string[] = await this.get_words_on_page(ctx)
+                let str: string = words[index - 1]
+                let translate: ModerationInterface = await VocbularController.get_word_on_moderation(ctx, str)
+
+                await UserConrtoller.save_selected_word(ctx, str)
+
+                let message: string = '';
+                // @ts-ignore
+                message += `${translate.buryat_translate.name} — ${translate.russian_translate.name}`
+                message += `\n<code>Дата создания: ${translate.createdAt}</code>`
+                await ctx.reply(message, {
+                    parse_mode: 'HTML', reply_markup: {
+                        inline_keyboard: [
+                            [
+                                {
+                                    text: 'Удалить',
+                                    callback_data: 'delete'
+                                }
+                            ],
+                            [
+                                {
+                                    text: 'Назад',
+                                    callback_data: 'back'
+                                }
+                            ]
+                        ]
+                    }
+                });
+
+                ctx.wizard.selectStep(5)
             }
 
         } catch (err) {
@@ -253,8 +326,46 @@ export default class vocabular_scene {
         }
     }
 
-    static async remove_moderation (ctx: MyContext, str: string) {
+    static async get_words_on_page(ctx: MyContext) {
+        let activePage: number | false = await VocbularController.get_page(ctx)
+        let words_on_page: string[]
+        let words = await VocbularController.get_words_on_moderation(ctx)
+        // let pages_per_row = 4
+        // let posts_per_page = 5
+
+        // if (activePage) {
+        //     words_on_page = await VocbularController.get_words_for_page(ctx, posts_per_page, activePage)
+        // } else {
+        //     words_on_page = await VocbularController.get_words_for_page(ctx, posts_per_page, 0)
+        // }
         
+        console.log('words ' + words)
+        return words
+    }
+
+    static async word_handler(ctx: MyContext) {
+        try {
+            if (ctx.updateType == 'callback_query') {
+                if (ctx.update['callback_query'].data == 'back') {
+                    ctx.wizard.selectStep(4)
+                    await this.moderation(ctx)
+                }
+
+                if (ctx.update["callback_query"].data == 'delete') {
+
+                    await UserConrtoller.delete_selected_word(ctx)
+                    ctx.answerCbQuery('Запись удалена из базы данных')
+                    await this.moderation(ctx)
+
+                }
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    static async remove_moderation(ctx: MyContext, str: string) {
+
         try {
 
             await ModerationModel.findByIdAndDelete({
@@ -262,14 +373,14 @@ export default class vocabular_scene {
             })
 
         } catch (err) {
-            
+
             console.log(err)
-        
+
         }
 
     }
 
-    static async rules (ctx: MyContext) {
+    static async rules(ctx: MyContext) {
         try {
             if (ctx.updateType == 'callback_query') {
 
@@ -298,31 +409,23 @@ export default class vocabular_scene {
 
             }
 
-        if (ctx.updateType == 'message') {
-
-            // проверка
-            if (ctx.update['message'].text == 'Да, всё понятно') {
-                await this.render_add_words (ctx)
-            } else {
-                let message = 'Пожалуйста, ознакомтесь с правилами'
-                await ctx.reply(message, Markup.keyboard([['Да, всё понятно']]).resize().oneTime())
+            if (ctx.updateType == 'message') {
+                await this.add_word(ctx)
             }
-
-        }
         } catch (err) {
             console.log(err)
         }
     }
 
-    static async render_add_words (ctx: MyContext) {
-        
+    static async render_add_words(ctx: MyContext) {
+
         try {
             Markup.removeKeyboard()
             await VocbularController.reset_middleware(ctx)
 
             if (ctx.updateType == 'callback_query') {
                 ctx.answerCbQuery()
-                await ctx.editMessageText('Отправьте слово', { parse_mode: 'HTML' })
+                await ctx.editMessageText('Отправьте слово или фразу на <b>бурятском языке</b>', { parse_mode: 'HTML' })
             }
 
             if (ctx.updateType == 'message') {
@@ -338,7 +441,7 @@ export default class vocabular_scene {
 
     }
 
-    static async getting_tranlsates (ctx: MyContext) {
+    static async getting_tranlsates(ctx: MyContext) {
         try {
             if (ctx.updateType == 'message') {
 
@@ -360,12 +463,12 @@ export default class vocabular_scene {
                 // console.log(word)
                 await VocbularController.insert_middleware(ctx)
                 await VocbularController.get_translates(ctx).then(async (result: IRussianTranslates) => {
-                    
+
                     if (result) {
                         if (result.translates.length) {
-                    
+
                             await ctx.reply(`<b>${word}</b> существует в базе данных`, extra)
-                    
+
                             let str: string = ``
                             result.translates.forEach(async (element: IRussianTranslate, index: number) => {
 
@@ -381,13 +484,13 @@ export default class vocabular_scene {
                             await ctx.reply(`<b>Можете отправить перевод к веденному тексту:</b> ${word}`, extra)
                         } else {
                             await ctx.reply(`<b>${word}</b> записан в базу данных`, { parse_mode: 'HTML' })
-                            await ctx.reply(`<b>Теперь отправьте перевод к веденному тексту:</b> ${word}`, extra)
+                            await ctx.reply(`<b>Теперь отправьте перевод к веденному тексту:</b> ${word}`, { parse_mode: 'HTML' })
                         }
 
 
                     } else {
                         await ctx.reply(`<b>${word}</b> записан в базу данных`, { parse_mode: 'HTML' })
-                        await ctx.reply(`<b>Теперь отправьте перевод к веденному тексту:</b> ${word}`, extra)
+                        await ctx.reply(`<b>Теперь отправьте перевод к веденному тексту:</b> ${word}`, { parse_mode: 'HTML' })
                     }
                 })
 
@@ -399,14 +502,16 @@ export default class vocabular_scene {
         }
     }
 
-    static async set_translates (ctx: MyContext) {
+    static async set_translates(ctx: MyContext) {
 
         try {
 
             // Пользователь отправляет перевод слова
             if (ctx.updateType == 'message') {
 
+                // сохраняем в промежуточный обработчик слово
                 await VocbularController.insert_middleware_translate(ctx)
+
 
                 let translates: [IRussianTranslate] = await VocbularController.get_russian_translates_after_insert(ctx)
                 let russian_translates_concat: string = ``
@@ -421,11 +526,11 @@ export default class vocabular_scene {
                     }
                 })
 
-                let message: string = ``
+                let message: string = `Список добавленных переводов \n`
                 let buryat_translate = await VocbularController.get_buryat_translate_from_middleware(ctx)
                 let russian_translates = await VocbularController.get_russian_translates_after_insert(ctx)
                 for (let i = 0; i < russian_translates.length; i++) {
-                    message += `${i}) ${buryat_translate} — ${russian_translates[i].name} \n`
+                    message += `${i+1}) ${buryat_translate.toLowerCase()} — ${russian_translates[i].name.toLowerCase()} \n`
                 }
 
                 let extra: ExtraEditMessageText = {
@@ -434,8 +539,13 @@ export default class vocabular_scene {
                         inline_keyboard: [
                             [
                                 {
-                                    text: '« назад',
+                                    text: 'Завершить добавление слов',
                                     callback_data: 'back'
+                                }
+                            ], [
+                                {
+                                    text: 'Модерация',
+                                    callback_data: 'moderation'
                                 }
                             ]
                         ]
@@ -448,6 +558,10 @@ export default class vocabular_scene {
             // Пользователь нажимает на кнопку Завершить добавление слов
             if (ctx.updateType == 'callback_query') {
                 let data = ctx.update["callback_query"].data
+
+                if (data == 'moderation') {
+                    await this.moderation(ctx)
+                }
 
                 if (data == 'end') {
 
@@ -467,7 +581,7 @@ export default class vocabular_scene {
 
             }
 
-        // проверка на существование, далее обработка!
+            // проверка на существование, далее обработка!
         } catch (err) {
 
             console.log(err)
@@ -475,11 +589,11 @@ export default class vocabular_scene {
         }
     }
 
-    static async render_settings (ctx: MyContext) {
-        
+    static async render_settings(ctx: MyContext) {
+
         try {
 
-            let title = 'Настрйоки'
+            let title = 'Настройки'
             let extra: ExtraEditMessageText = {
                 parse_mode: 'HTML',
                 reply_markup: {
@@ -508,7 +622,7 @@ export default class vocabular_scene {
                             }
                         ])
                     }
-            })
+                })
 
             extra.reply_markup.inline_keyboard.push([
                 {
@@ -520,13 +634,13 @@ export default class vocabular_scene {
             await ctx.editMessageText(title, extra)
 
         } catch (err) {
-            
+
             //
 
         }
     }
 
-    static async add_word (ctx: MyContext) {
+    static async add_word(ctx: MyContext) {
         try {
 
             let message = `Обновление словаря`

@@ -1,11 +1,7 @@
 import { Composer, Scenes } from "telegraf";
-import { ExtraReplyMessage } from "telegraf/typings/telegram-types";
 import UserConrtoller from "../../Controller/User/UserController";
 import { MyContext } from "../../Model";
-import IUser from "../../Model/User/IUserModel";
 require("dotenv").config();
-
-let partials: Array<string> = ["alphabet", "soundsAndLetters", "wordFormation", "partsOfSpeech", "cases", "verbs", "sentences", "negation", "home"]
 
 const handler = new Composer<MyContext>();
 const home = new Scenes.WizardScene(
@@ -51,56 +47,32 @@ export function greeting(ctx: MyContext) {
 }
 
 home.start(async (ctx) => {
+
     try {
-        await UserConrtoller.save_user(ctx).catch(err => {
-            ctx.wizard.selectStep(1)
-        })
-        await UserConrtoller.check_gender(ctx)
-            .then(async (user: IUser) => {
 
-                // Проверка на существование поля пол
-                if (!user.male) {
-
-                    ctx.wizard.next()
-
-                    let message = `Привет ${ctx.from.first_name}, выберите ваш пол`
-                    let extra: ExtraReplyMessage = {
-                        parse_mode: 'HTML',
-                        reply_markup: {
-                            inline_keyboard: [
-                                [
-                                    {
-                                        text: 'Мужчина',
-                                        callback_data: 'male'
-                                    },
-                                    {
-                                        text: 'Женщина',
-                                        callback_data: 'female'
-                                    }
-                                ],
-                                [
-                                    {
-                                        text: 'Не указывать',
-                                        callback_data: 'later'
-                                    }
-                                ]
-                            ]
-                        }
-                    }
-
-                    await ctx.reply(message, extra)
-                } else {
-                    await greeting(ctx)
-                }
+        let user = await UserConrtoller.get_user(ctx)
+        if (!user) {
+            await UserConrtoller.save_user(ctx).catch(err => {
+                ctx.wizard.selectStep(1)
             })
-
+            await greeting(ctx)
+        } else {
+            return await greeting(ctx)
+        }
 
     } catch (err) {
         // err
     }
 })
 
+home.command('home', async (ctx) => ctx.scene.enter('home'))
+home.command('vocabular', async (ctx) => ctx.scene.enter('vocabular'))
+home.command('study', async (ctx) => ctx.scene.enter('study'))
+home.command('dashboard', async (ctx) => ctx.scene.enter('dashboard'))
+home.command('back', async (ctx) => ctx.scene.enter('home'))
+
 home.enter((ctx) => greeting(ctx))
+
 handler.action(/./, async (ctx) => {
     // ctx.answerCbQuery()
 
