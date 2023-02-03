@@ -75,7 +75,7 @@ const stage = new Scenes.Stage<MyContext>(scenes, {
             })()
     } else {
         try {
-            await bot.telegram.setWebhook(`https://anoname.xyz${secretPath}`)
+            bot.telegram.setWebhook(`https://anoname.xyz${secretPath}`)
             console.log('web hook setted')
         } catch (err) {
             console.log(err)

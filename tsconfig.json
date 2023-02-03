@@ -3,6 +3,7 @@
         "module": "commonjs",
         "sourceMap": true,
         "outDir": "dist",
+        "sourceRoot": "src"
     },
     "exclude": [
         "node_modules"
