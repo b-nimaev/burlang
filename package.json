@@ -1,22 +1,22 @@
 {
   "dependencies": {
-    "@a2seven/yoo-checkout": "^1.1.2",
+    "@a2seven/yoo-checkout": "^1.1.4",
     "cors": "^2.8.5",
-    "dotenv": "^16.0.1",
-    "mongodb": "^4.7.0",
-    "mongoose": "^6.7.5",
+    "dotenv": "^16.0.3",
+    "mongodb": "^5.0.0",
+    "mongoose": "^6.9.0",
     "morgan": "^1.10.0",
     "telegraf": "^4.11.2",
     "yookassa": "^0.1.1"
   },
   "devDependencies": {
-    "@types/express": "^4.17.13",
+    "@types/express": "^4.17.17",
     "@types/localtunnel": "^2.0.1",
-    "@types/node": "^17.0.42",
-    "express": "^4.18.1",
+    "@types/node": "^18.11.18",
+    "express": "^4.18.2",
     "localtunnel": "^2.0.2",
-    "nodemon": "^2.0.18",
-    "ts-node": "^10.8.1"
+    "nodemon": "^2.0.20",
+    "ts-node": "^10.9.1"
   },
   "name": "burlang",
   "version": "1.0.0",

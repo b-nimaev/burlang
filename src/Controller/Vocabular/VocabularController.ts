@@ -1,4 +1,4 @@
-import { ObjectId, ObjectID } from "mongodb"
+import { ObjectId } from "mongodb"
 import { MyContext } from "../../Model"
 import { CustomerModel } from "../../Model/Common/ICustomer"
 import ModerationModel, { ModerationInterface } from "../../Model/Moderation/IModeration"
