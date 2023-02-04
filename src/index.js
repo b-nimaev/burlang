@@ -123,6 +123,7 @@ var stage = new telegraf_1.Scenes.Stage(scenes, {
             case 1:
                 _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, exports.bot.telegram.setWebhook("https://anoname.xyz".concat(secretPath)).then(function (status) {
+                        console.log(secretPath);
                         console.log(status);
                     })["catch"](function (err) {
                         console.log(err);
