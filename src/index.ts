@@ -116,7 +116,7 @@ app.use(morgan("dev"));
 // @ts-ignore
 app.get("/", (req: Request, res: Response) => res.send("Бот запущен!"))
 app.use(bot.webhookCallback(secretPath))
-app.listen(port)
+app.listen(5000)
 // const server = https.createServer({ key, cert }, app);
 // server.listen(port, () => console.log("telegram bot launched!"))
 

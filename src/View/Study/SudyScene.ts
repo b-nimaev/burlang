@@ -88,6 +88,7 @@ study.action(/.*/, async (ctx: MyContext) => {
     try {
         ctx.scene.enter(ctx.update["callback_query"].data)
     } catch (err) {
+        ctx.scene.enter('home')
         console.log(err)
     }
 
