@@ -20,10 +20,10 @@ export async function run() {
 run()
 
 // SSL
-const fs = require('fs');
-const key = fs.readFileSync('./ssl/localhost.decrypted.key');
-const cert = fs.readFileSync('./ssl/localhost.crt');
-const https = require('https');
+// const fs = require('fs');
+// const key = fs.readFileSync('./ssl/localhost.decrypted.key');
+// const cert = fs.readFileSync('./ssl/localhost.crt');
+// const https = require('https');
 
 const morgan = require("morgan")
 const cors = require("cors")
@@ -49,43 +49,45 @@ export default bot
 const app = express()
 const port = process.env.port
 const secretPath = `/telegraf/${bot.secretPathComponent()}`
+bot.telegram.setWebhook(`https://anoname.xyz${secretPath}`)
+console.log(secretPath)
 const stage = new Scenes.Stage<MyContext>(scenes, {
     default: 'home',
 })
 
 // Set webhook
-;(async () => {
-    if (process.env.mode === "development") {
+// ;(async () => {
+//     if (process.env.mode === "development") {
 
-        const fetch = require('node-fetch')
-        fetch('http://localhost:4040/api/tunnels')
-            .then(res => res.json())
-            .then(json => json.tunnels.find(tunnel => tunnel.proto === 'https'))
-            .then(secureTunnel => bot.telegram.setWebhook(`${secureTunnel.public_url}${secretPath}`))
-            .then((status) => console.log('Webhook setted: ' + status))
-            .catch(err => {
-                if (err.code === 'ECONNREFUSED') {
-                    return console.error("Looks like you're not running ngrok.")
-                }
-                console.error(err)
-            });
+//         const fetch = require('node-fetch')
+//         fetch('http://localhost:4040/api/tunnels')
+//             .then(res => res.json())
+//             .then(json => json.tunnels.find(tunnel => tunnel.proto === 'https'))
+//             .then(secureTunnel => bot.telegram.setWebhook(`${secureTunnel.public_url}${secretPath}`))
+//             .then((status) => console.log('Webhook setted: ' + status))
+//             .catch(err => {
+//                 if (err.code === 'ECONNREFUSED') {
+//                     return console.error("Looks like you're not running ngrok.")
+//                 }
+//                 console.error(err)
+//             });
     
-            (async () => {
-                await database.get_admins()
-            })()
-    } else {
-        try {
-            await bot.telegram.setWebhook(`https://anoname.xyz${secretPath}`).then((status) => {
-                console.log(secretPath)
-                console.log(status)
-            }).catch(err => {
-                console.log(err)
-            })
-        } catch (err) {
-            console.log(err)
-        }
-    }
-})();
+//             (async () => {
+//                 await database.get_admins()
+//             })()
+//     } else {
+//         try {
+//             await bot.telegram.setWebhook(`https://anoname.xyz${secretPath}`).then((status) => {
+//                 console.log(secretPath)
+//                 console.log(status)
+//             }).catch(err => {
+//                 console.log(err)
+//             })
+//         } catch (err) {
+//             console.log(err)
+//         }
+//     }
+// })();
 
 bot.use(session())
 bot.use((ctx, next) => {
