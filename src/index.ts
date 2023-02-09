@@ -48,8 +48,20 @@ export const bot = new Telegraf<MyContext>(token)
 export default bot
 const app = express()
 const port = process.env.port
-const secretPath = `/telegraf/${bot.secretPathComponent()}`
-bot.telegram.setWebhook(`https://anoname.xyz${secretPath}`)
+const secretPath = `/telegraf/${bot.secretPathComponent()}`;
+(async () => {
+    try {
+        await bot.telegram.setWebhook(`https://anoname.xyz${secretPath}`)
+            .then(status => {
+                console.log(status)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    } catch (err) {
+        console.log(err)
+    }
+})
 console.log(secretPath)
 const stage = new Scenes.Stage<MyContext>(scenes, {
     default: 'home',
