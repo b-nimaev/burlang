@@ -37,10 +37,11 @@ const partsOfSpeech = new Scenes.WizardScene(
 
 handler.on("message", async (ctx) => greeting(ctx))
 
-partsOfSpeech.command("dashboard", async (ctx) => ctx.scene.enter("dashboard"))
-partsOfSpeech.command("vocabular", async (ctx) => ctx.scene.enter("vocabular"))
-partsOfSpeech.command("study", async (ctx) => ctx.scene.enter("study"))
-partsOfSpeech.command("home", async (ctx) => ctx.scene.enter("home"))
+partsOfSpeech.command('home', async (ctx) => ctx.scene.enter('home'))
+partsOfSpeech.command('vocabular', async (ctx) => ctx.scene.enter('vocabular'))
+partsOfSpeech.command('study', async (ctx) => ctx.scene.enter('study'))
+partsOfSpeech.command('dashboard', async (ctx) => ctx.scene.enter('dashboard'))
+partsOfSpeech.command('back', async (ctx) => ctx.scene.enter('study'))
 partsOfSpeech.enter(async (ctx) => greeting(ctx))
 
 partsOfSpeech.action("back", async (ctx) => ctx.scene.enter('study'))

@@ -86,4 +86,10 @@ alphabet.action("back", async (ctx) => {
     ctx.answerCbQuery()
 })
 
+alphabet.command('home', async (ctx) => ctx.scene.enter('home'))
+alphabet.command('vocabular', async (ctx) => ctx.scene.enter('vocabular'))
+alphabet.command('study', async (ctx) => ctx.scene.enter('study'))
+alphabet.command('dashboard', async (ctx) => ctx.scene.enter('dashboard'))
+alphabet.command('back', async (ctx) => ctx.scene.enter('study'))
+
 export default alphabet

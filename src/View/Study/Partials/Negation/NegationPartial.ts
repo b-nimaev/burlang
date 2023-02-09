@@ -36,10 +36,11 @@ const negation = new Scenes.WizardScene(
 
 handler.on("message", async (ctx) => greeting(ctx))
 
-negation.command("dashboard", async (ctx) => ctx.scene.enter("dashboard"))
-negation.command("vocabular", async (ctx) => ctx.scene.enter("vocabular"))
-negation.command("study", async (ctx) => ctx.scene.enter("study"))
-negation.command("home", async (ctx) => ctx.scene.enter("home"))
+negation.command('home', async (ctx) => ctx.scene.enter('home'))
+negation.command('vocabular', async (ctx) => ctx.scene.enter('vocabular'))
+negation.command('study', async (ctx) => ctx.scene.enter('study'))
+negation.command('dashboard', async (ctx) => ctx.scene.enter('dashboard'))
+negation.command('back', async (ctx) => ctx.scene.enter('study'))
 negation.enter(async (ctx) => greeting(ctx))
 
 negation.action("back", async (ctx) => ctx.scene.enter('study'))

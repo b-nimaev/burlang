@@ -37,12 +37,12 @@ const wordFormation = new Scenes.WizardScene(
 
 handler.on("message", async (ctx) => greeting(ctx))
 
-wordFormation.command("dashboard", async (ctx) => ctx.scene.enter("dashboard"))
-wordFormation.command("vocabular", async (ctx) => ctx.scene.enter("vocabular"))
-wordFormation.command("study", async (ctx) => ctx.scene.enter("study"))
-wordFormation.command("home", async (ctx) => ctx.scene.enter("home"))
+wordFormation.command('home', async (ctx) => ctx.scene.enter('home'))
+wordFormation.command('vocabular', async (ctx) => ctx.scene.enter('vocabular'))
+wordFormation.command('study', async (ctx) => ctx.scene.enter('study'))
+wordFormation.command('dashboard', async (ctx) => ctx.scene.enter('dashboard'))
+wordFormation.command('back', async (ctx) => ctx.scene.enter('study'))
 wordFormation.enter(async (ctx) => greeting(ctx))
-
 wordFormation.action("back", async (ctx) => ctx.scene.enter('study'))
 
 export default wordFormation

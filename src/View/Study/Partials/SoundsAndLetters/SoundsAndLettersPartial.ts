@@ -37,10 +37,11 @@ const soundsAndLetters = new Scenes.WizardScene(
 
 handler.on("message", async (ctx) => greeting(ctx))
 
-soundsAndLetters.command("dashboard", async (ctx) => ctx.scene.enter("dashboard"))
-soundsAndLetters.command("vocabular", async (ctx) => ctx.scene.enter("vocabular"))
-soundsAndLetters.command("study", async (ctx) => ctx.scene.enter("study"))
-soundsAndLetters.command("home", async (ctx) => ctx.scene.enter("home"))
+soundsAndLetters.command('home', async (ctx) => ctx.scene.enter('home'))
+soundsAndLetters.command('vocabular', async (ctx) => ctx.scene.enter('vocabular'))
+soundsAndLetters.command('study', async (ctx) => ctx.scene.enter('study'))
+soundsAndLetters.command('dashboard', async (ctx) => ctx.scene.enter('dashboard'))
+soundsAndLetters.command('back', async (ctx) => ctx.scene.enter('study'))
 soundsAndLetters.enter(async (ctx) => greeting(ctx))
 
 soundsAndLetters.action("back", async (ctx) => ctx.scene.enter('study'))

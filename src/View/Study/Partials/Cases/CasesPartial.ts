@@ -36,10 +36,11 @@ const cases = new Scenes.WizardScene(
 
 handler.on("message", async (ctx) => greeting(ctx))
 
-cases.command("dashboard", async (ctx) => ctx.scene.enter("dashboard"))
-cases.command("vocabular", async (ctx) => ctx.scene.enter("vocabular"))
-cases.command("study", async (ctx) => ctx.scene.enter("study"))
-cases.command("home", async (ctx) => ctx.scene.enter("home"))
+cases.command('home', async (ctx) => ctx.scene.enter('home'))
+cases.command('vocabular', async (ctx) => ctx.scene.enter('vocabular'))
+cases.command('study', async (ctx) => ctx.scene.enter('study'))
+cases.command('dashboard', async (ctx) => ctx.scene.enter('dashboard'))
+cases.command('back', async (ctx) => ctx.scene.enter('study'))
 cases.enter(async (ctx) => greeting(ctx))
 
 cases.action("back", async (ctx) => ctx.scene.enter('study'))
