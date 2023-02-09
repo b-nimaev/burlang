@@ -30,21 +30,20 @@ function greeting(ctx: MyContext) {
 }
 
 const handler = new Composer<MyContext>();
-const scene = new Scenes.WizardScene(
+const partsOfSpeech = new Scenes.WizardScene(
     "partsOfSpeech",
     handler
 );
 
 handler.on("message", async (ctx) => greeting(ctx))
 
-scene.command("dashboard", async (ctx) => ctx.scene.enter("dashboard"))
-scene.command("vocabular", async (ctx) => ctx.scene.enter("vocabular"))
-scene.command("study", async (ctx) => ctx.scene.enter("study"))
-scene.command("home", async (ctx) => ctx.scene.enter("home"))
-scene.enter(async (ctx) => greeting(ctx))
+partsOfSpeech.command("dashboard", async (ctx) => ctx.scene.enter("dashboard"))
+partsOfSpeech.command("vocabular", async (ctx) => ctx.scene.enter("vocabular"))
+partsOfSpeech.command("study", async (ctx) => ctx.scene.enter("study"))
+partsOfSpeech.command("home", async (ctx) => ctx.scene.enter("home"))
+partsOfSpeech.enter(async (ctx) => greeting(ctx))
 
-scene.action("back", async (ctx) => ctx.scene.enter('study'))
-scene.action(/.*/, async (ctx) => ctx.scene.enter(ctx.update["callback_query"].data))
+partsOfSpeech.action("back", async (ctx) => ctx.scene.enter('study'))
 
 
-export default scene
+export default partsOfSpeech

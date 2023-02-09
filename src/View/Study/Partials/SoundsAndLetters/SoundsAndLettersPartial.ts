@@ -1,6 +1,6 @@
 import { Composer, Scenes } from "telegraf";
 import { MyContext } from "../../../../Model";
-const scenes = ["alphabet", "soundsAndLetters", "wordFormation", "partsOfSpeech", "cases", "verbs", "sentences", "negation", "home"]
+
 const message = "Звуки и буквы"
 const extraGreeting = {
     parse_mode: 'HTML', reply_markup: {
@@ -30,23 +30,22 @@ function greeting(ctx: MyContext) {
 }
 
 const handler = new Composer<MyContext>();
-const scene = new Scenes.WizardScene(
+const soundsAndLetters = new Scenes.WizardScene(
     "soundsAndLetters",
     handler
 );
 
 handler.on("message", async (ctx) => greeting(ctx))
 
-scene.command("dashboard", async (ctx) => ctx.scene.enter("dashboard"))
-scene.command("vocabular", async (ctx) => ctx.scene.enter("vocabular"))
-scene.command("study", async (ctx) => ctx.scene.enter("study"))
-scene.command("home", async (ctx) => ctx.scene.enter("home"))
-scene.enter(async (ctx) => greeting(ctx))
+soundsAndLetters.command("dashboard", async (ctx) => ctx.scene.enter("dashboard"))
+soundsAndLetters.command("vocabular", async (ctx) => ctx.scene.enter("vocabular"))
+soundsAndLetters.command("study", async (ctx) => ctx.scene.enter("study"))
+soundsAndLetters.command("home", async (ctx) => ctx.scene.enter("home"))
+soundsAndLetters.enter(async (ctx) => greeting(ctx))
 
-scene.action("back", async (ctx) => ctx.scene.enter('study'))
-scene.action("start", async (ctx) => {
+soundsAndLetters.action("back", async (ctx) => ctx.scene.enter('study'))
+soundsAndLetters.action("start", async (ctx) => {
     ctx.answerCbQuery()
 })
-scene.action(/.*/, async (ctx) => ctx.scene.enter(ctx.update["callback_query"].data))
 
-export default scene
+export default soundsAndLetters

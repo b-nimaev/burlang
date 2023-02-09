@@ -30,21 +30,19 @@ function greeting(ctx: MyContext) {
 }
 
 const handler = new Composer<MyContext>();
-const scene = new Scenes.WizardScene(
+const wordFormation = new Scenes.WizardScene(
     "wordFormation",
     handler
 );
 
 handler.on("message", async (ctx) => greeting(ctx))
 
-scene.command("dashboard", async (ctx) => ctx.scene.enter("dashboard"))
-scene.command("vocabular", async (ctx) => ctx.scene.enter("vocabular"))
-scene.command("study", async (ctx) => ctx.scene.enter("study"))
-scene.command("home", async (ctx) => ctx.scene.enter("home"))
-scene.enter(async (ctx) => greeting(ctx))
+wordFormation.command("dashboard", async (ctx) => ctx.scene.enter("dashboard"))
+wordFormation.command("vocabular", async (ctx) => ctx.scene.enter("vocabular"))
+wordFormation.command("study", async (ctx) => ctx.scene.enter("study"))
+wordFormation.command("home", async (ctx) => ctx.scene.enter("home"))
+wordFormation.enter(async (ctx) => greeting(ctx))
 
-scene.action("back", async (ctx) => ctx.scene.enter('study'))
-scene.action(/.*/, async (ctx) => ctx.scene.enter(ctx.update["callback_query"].data))
+wordFormation.action("back", async (ctx) => ctx.scene.enter('study'))
 
-
-export default scene
+export default wordFormation

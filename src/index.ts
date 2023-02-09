@@ -11,6 +11,14 @@ import { database } from './Controller/database';
 import vocabular from './View/Vocabular/VocabularScene';
 import { connect } from 'mongoose';
 import moderation from './View/ModerationScene/ModerationScene';
+
+import soundsAndLetters from './View/Study/Partials/SoundsAndLetters/SoundsAndLettersPartial';
+import wordFormation from './View/Study/Partials/WordFormation/WordFormationPartial';
+import partsOfSpeech from './View/Study/Partials/PartsOfSpeech/PartsOfSpeechPartial';
+import cases from './View/Study/Partials/Cases/CasesPartial';
+import verbs from './View/Study/Partials/Verbs/VerbsPartial';
+import sentences from './View/Study/Partials/Sentences/SentencesPartial';
+import negation from './View/Study/Partials/Negation/NegationPartial';
 let uri = process.env.db__localhost
 
 export async function run() {
@@ -42,7 +50,7 @@ if (token === undefined) {
 
 
 // Init scenes & set secretPath for requires from bot
-const scenes = [home, dashboard, vocabular, study, moderation, alphabet]
+const scenes = [home, dashboard, vocabular, study, moderation, alphabet, soundsAndLetters, wordFormation, partsOfSpeech, cases, verbs, sentences, negation]
 export const bot = new Telegraf<MyContext>(token)
 
 export default bot
