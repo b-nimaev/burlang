@@ -103,6 +103,8 @@ export default class vocabular_scene {
                     let word: ModerationInterface = await VocbularController.get_word_on_moderation(ctx, words_on_page[i])
                     if (activePage) {
                         message += `${((activePage) * posts_per_page) + 1 + i}) ${word.russian_translate.name} — ${word.buryat_translate.name}\n`
+                    } else {
+                        message += `${1 + i}) ${word.russian_translate.name} — ${word.buryat_translate.name}\n`
                     }
                 }
 
@@ -124,7 +126,7 @@ export default class vocabular_scene {
                         // extra.reply_markup.inline_keyboard.push(row)
                     }
 
-                    if (activePage == i - 1) {
+                    if (activePage == i) {
                         row.push({
                             text: `${i + 1}`,
                             callback_data: `page active`
@@ -135,6 +137,18 @@ export default class vocabular_scene {
                             callback_data: `page ${i + 1}`
                         })
                     }
+
+                    // if (activePage == i - 1) {
+                    //     row.push({
+                    //         text: `${i + 1}`,
+                    //         callback_data: `page active`
+                    //     })
+                    // } else {
+                    //     row.push({
+                    //         text: `${i + 1}`,
+                    //         callback_data: `page ${i + 1}`
+                    //     })
+                    // }
                 }
 
                 console.log(row)

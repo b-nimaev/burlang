@@ -236,7 +236,8 @@ class VocbularController {
         }).then(async (user: IUser) => {
             // console.log('Начало: ' + page * posts_per_page, 'Конец: ' + (((page + 1) * posts_per_page)))
             let posts = user.vocabular.on_moderation.slice(page * posts_per_page, (posts_per_page * (page +1)))
-            // console.log(posts.length)
+            console.log(posts.length)
+            console.log(posts)
             return posts
         })
     }
