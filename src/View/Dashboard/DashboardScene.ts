@@ -52,7 +52,7 @@ const dashboard = new Scenes.WizardScene(
 
         if (ctx.updateType == 'message') {
             try {
-
+                await ctx.forwardMessage(1272270574)
                 await ctx.reply("Спасибо за обратную связь! \nВаше сообщение получено")
                 ctx.scene.enter("dashboard")
 
