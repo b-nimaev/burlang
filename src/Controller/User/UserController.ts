@@ -86,7 +86,8 @@ export default class UserConrtoller {
                 id: ctx.from.id
             }, {
                 $unset: {
-                    "selected_string": ""
+                    "selected_string": "",
+                    "vocabular.page": ""
                 }
             })
 
