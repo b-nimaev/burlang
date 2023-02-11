@@ -137,18 +137,6 @@ export default class vocabular_scene {
                             callback_data: `page ${i + 1}`
                         })
                     }
-
-                    // if (activePage == i - 1) {
-                    //     row.push({
-                    //         text: `${i + 1}`,
-                    //         callback_data: `page active`
-                    //     })
-                    // } else {
-                    //     row.push({
-                    //         text: `${i + 1}`,
-                    //         callback_data: `page ${i + 1}`
-                    //     })
-                    // }
                 }
 
                 console.log(row)
