@@ -356,6 +356,7 @@ export default class vocabular_scene {
                 if (ctx.update["callback_query"].data == 'delete') {
 
                     await UserConrtoller.delete_selected_word(ctx)
+                    // await UserConrtoller.set_active_page_1(ctx)
                     ctx.answerCbQuery('Запись удалена из базы данных')
                     await this.moderation(ctx)
 

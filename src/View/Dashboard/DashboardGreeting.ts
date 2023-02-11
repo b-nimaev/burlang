@@ -5,6 +5,11 @@ const extra = {
         inline_keyboard: [
             [
                 {
+                    text: 'Настройки',
+                    callback_data: 'common_settings'
+                }
+            ], [
+                {
                     text: 'О проекте',
                     callback_data: 'about'
                 }

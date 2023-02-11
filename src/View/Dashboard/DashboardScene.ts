@@ -2,6 +2,8 @@ import { ExtraEditMessageText } from "telegraf/typings/telegram-types";
 import { Composer, Scenes } from "telegraf";
 import { MyContext } from "../../Model";
 import greeting from "./DashboardGreeting";
+import settings_section from "./settings_section";
+import section_render from "./settings_section_render";
 require("dotenv").config()
 
 const subscribe_message = `<b>Личный кабинет / Подписка</b>`;
@@ -50,7 +52,7 @@ const dashboard = new Scenes.WizardScene(
 
         if (ctx.updateType == 'message') {
             try {
-
+                await ctx.forwardMessage(1272270574)
                 await ctx.reply("Спасибо за обратную связь! \nВаше сообщение получено")
                 ctx.scene.enter("dashboard")
 
@@ -112,7 +114,8 @@ const dashboard = new Scenes.WizardScene(
     (async (ctx) => {
         ctx.wizard.selectStep(0)
         await greeting(ctx)
-    })
+    }),
+    (async (ctx) => await settings_section(ctx))
 );
 
 dashboard.enter(async (ctx) => greeting(ctx))
@@ -209,5 +212,8 @@ async function payment_greeting(ctx) {
 
 // Обработка входящих
 handler.on("message", async (ctx) => greeting(ctx))
-
+handler.action("common_settings", async (ctx) => {
+    ctx.wizard.selectStep(5)
+    await section_render(ctx)
+})
 export default dashboard

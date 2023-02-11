@@ -72,6 +72,7 @@ async function set_webhook () {
                 .then(res => res.json())
                 .then(json => json.tunnels.find(tunnel => tunnel.proto === 'https'))
                 .then(secureTunnel => bot.telegram.setWebhook(secureTunnel.public_url + secretPath))
+                .then(status => { console.log(status) })
         } catch (err) {
             console.log(err)
         }
@@ -88,7 +89,6 @@ async function set_webhook () {
             console.log(err)
         }
     }
-
 }
 
 set_webhook()
