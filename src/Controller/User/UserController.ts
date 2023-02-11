@@ -33,10 +33,15 @@ export default class UserConrtoller {
                 male: 'later',
                 middleware: null,
                 settings: {
-                    rules: false
+                    rules: false,
+                    username: ctx.from.first_name,
+                    interface_language: 'russian'
                 },
-                access1: {
-                    moderation: false
+                moderation: {
+                    access: false,
+                    currentPage: 1,
+                    currentWord: '',
+                    moderatedCount: 0
                 },
                 subscribe: false,
                 vocabular: {
@@ -50,6 +55,7 @@ export default class UserConrtoller {
             console.log(err)
         }
     }
+    
 
     static async save_selected_word(ctx: MyContext, str: string) {
         try {
@@ -163,10 +169,38 @@ export default class UserConrtoller {
             return await UserModel.findOne({
                 id: ctx.from.id
             }).then(async (user: IUser) => {
-                if (user.access1.moderation) {
+                if (user.moderation.access) {
                     return true
                 } else {
                     return false
+                }
+            })
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    static async update_username (ctx: MyContext, username: string) {
+        try {
+            await UserModel.findOneAndUpdate({
+                id: ctx.from.id
+            }, {
+                $set: {
+                    "settings.username": username
+                }
+            })
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    static async interface_language (ctx: MyContext, language: string) {
+        try {
+            await UserModel.findOneAndUpdate({
+                id: ctx.from.id
+            }, {
+                $set: {
+                    "settings.interface_language": language
                 }
             })
         } catch (err) {

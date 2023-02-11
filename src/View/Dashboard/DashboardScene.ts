@@ -4,6 +4,9 @@ import { MyContext } from "../../Model";
 import greeting from "./DashboardGreeting";
 import settings_section from "./settings_section";
 import section_render from "./settings_section_render";
+import UserConrtoller from "../../Controller/User/UserController";
+import about_project from "./about_project/about";
+import InterfaceContoller from "../../Controller/Bin/CommonInterface";
 require("dotenv").config()
 
 const subscribe_message = `<b>Личный кабинет / Подписка</b>`;
@@ -16,20 +19,6 @@ const subscribe_extra = {
                     text: 'Оформить подписку',
                     callback_data: 'subscribe'
                 }], [{
-                    text: 'Назад',
-                    callback_data: 'back'
-                }
-            ]
-        ]
-    }
-}
-
-const payment_extra = {
-    parse_mode: 'HTML',
-    reply_markup: {
-        inline_keyboard: [
-            [
-                {
                     text: 'Назад',
                     callback_data: 'back'
                 }
@@ -76,10 +65,8 @@ const dashboard = new Scenes.WizardScene(
                 }
 
                 if (ctx.update["callback_query"].data == "about") {
-                    ctx.wizard.selectStep(4)
-                    // @ts-ignore
-                    ctx.editMessageText('О проекте ...', payment_extra)
-                    return ctx.answerCbQuery('О проекте')
+                    await about_project(ctx)
+                    console.log('about project')
                 }
 
 
@@ -108,14 +95,63 @@ const dashboard = new Scenes.WizardScene(
         console.log(ctx)
 
         if (ctx.update["message"]) {
-            payment_greeting(ctx)
+            // payment_greeting(ctx)
         }
     }),
     (async (ctx) => {
         ctx.wizard.selectStep(0)
         await greeting(ctx)
     }),
-    (async (ctx) => await settings_section(ctx))
+    (async (ctx) => await settings_section(ctx)),
+    (async (ctx) => {
+        try {
+
+            if (ctx.updateType == 'callback_query') {
+
+                let data: 'russian' | 'buryat' | 'english' = ctx.update["callback_query"].data
+
+                if (data === 'buryat' || data === 'english' || data === 'russian') {
+                    await UserConrtoller.interface_language(ctx, data)
+                    await section_render(ctx)
+                }                    
+
+            } else if (ctx.updateType == 'message') {
+
+                let message = ctx.update["message"].text
+                await UserConrtoller.update_username(ctx, message)
+                await section_render(ctx)
+            }
+
+        } catch (err) {
+            console.log(err)
+        }
+    }),
+    (async (ctx) => {
+        if (ctx.updateType == 'message') {
+            // await InterfaceContoller.create_interace('about_project')
+            await ctx.reply('отправьте текст')
+            ctx.wizard.next()
+        }
+
+        if (ctx.updateType == 'callback_query') {
+            if (ctx.update["callback_query"].data == 'back') {
+                await greeting(ctx)
+                ctx.wizard.selectStep(0)
+            }
+        }
+    }),
+    (async (ctx) => {
+        if (ctx.updateType == 'message') {
+            try {
+                await InterfaceContoller.set_translate('about_project', ctx.update["message"].text)
+                await ctx.reply('текст сохранен')
+                
+            } catch (err) {
+                await ctx.reply('Возникла ошибка')
+                await greeting(ctx)
+            }
+        }
+    })
 );
 
 dashboard.enter(async (ctx) => greeting(ctx))
@@ -144,7 +180,7 @@ async function subcribe_greeting(ctx) {
     }
 }
 
-dashboard.action("about", async (ctx) => about_greeting(ctx))
+dashboard.action("about", async (ctx) => await about_project(ctx))
 
 dashboard.command('home', async (ctx) => ctx.scene.enter('home'))
 dashboard.command('vocabular', async (ctx) => ctx.scene.enter('vocabular'))
@@ -152,68 +188,9 @@ dashboard.command('study', async (ctx) => ctx.scene.enter('study'))
 dashboard.command('dashboard', async (ctx) => ctx.scene.enter('dashboard'))
 dashboard.command('back', async (ctx) => ctx.scene.enter('dashboard'))
 
-async function about_greeting(ctx) {
-    let message = 'О проекте ...'
-    let extra: ExtraEditMessageText = {
-        parse_mode: 'HTML',
-        reply_markup: {
-            inline_keyboard: [
-                [
-                    {
-                        text: 'Назад',
-                        callback_data: 'back'
-                    }
-                ]
-            ]
-        }
-    }
-
-    await ctx.editMessageText(message, extra).then(() => {
-        ctx.wizard.selectStep(4)
-    })
-}
-
-let text = 'Изучение Бурятского языка никогда не давалось так просто с этой подпиской 😁👍'
-
-const invoice = {
-    provider_token: '381764678:TEST:39383',
-    start_parameter: 'time-machine-sku',
-    title: 'Оформление подписки',
-    description: text,
-    currency: 'RUB',
-    is_flexible: true,
-    prices: [
-        { label: 'Working Time Machine', amount: 10000 }
-    ],
-    payload: JSON.stringify({
-        coupon: 'BLACK FRIDAY'
-    })
-}
-
-async function payment_greeting(ctx) {
-    if (ctx.update["callback_query"]) {
-        // ctx.editMessageText('Тут вывести метод оплаты', payment_extra)
-        ctx.replyWithInvoice(invoice)
-        // ctx.editMessageText(invoice)
-        // ctx.editmessageinvoice
-        // ctx.
-        return ctx.answerCbQuery('Оформление подписки')
-    } else {
-        if (ctx.update["message"].successful_payment) {
-            console.log(ctx.update["message"].successful_payment)
-        } else {
-
-        }
-    }
-}
-
-// Получаем название сцены из массива и переходим, если это команда
-// dashboard.command(process.env.scenes.split(","), async (ctx) => ctx.scene.enter(ctx.update["message"].text.replace('/', '')))
-
 // Обработка входящих
-handler.on("message", async (ctx) => greeting(ctx))
+// handler.on("message", async (ctx) => greeting(ctx))
 handler.action("common_settings", async (ctx) => {
-    ctx.wizard.selectStep(5)
     await section_render(ctx)
 })
 export default dashboard

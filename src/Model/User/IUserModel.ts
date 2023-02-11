@@ -10,13 +10,19 @@ interface IUser extends User {
         page: number
     },
     settings: {
-        rules: boolean
+        rules: boolean,
+        username?: string,
+        interface_language: 'russian' | 'buryat' | 'english'
     },
-    access1: {
-        moderation: boolean
+    moderation: {
+        access: boolean,
+        currentPage?: number,
+        currentWord?: string,
+        moderatedCount?: number
     },
     subscribe: boolean,
     selected_string?: string
 }
+
 
 export default IUser

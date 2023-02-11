@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { model, Schema } from "mongoose";
 import { customerSchema, ICustomer } from "../Common/ICustomer";
 import buryatTranslateSchema, { IBuryatTranslate } from "../Translate/IBuryatTranslate";
@@ -8,6 +9,7 @@ export interface ModerationInterface {
     buryat_translate: IBuryatTranslate,
     russian_translate: IRussianTranslate,
     customer: ICustomer,
+    id: ObjectId
 }
 
 const ModerationSchema = new Schema<ModerationInterface>({

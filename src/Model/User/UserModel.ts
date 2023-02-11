@@ -15,10 +15,15 @@ const userSchema = new Schema<IUser>({
         page: { type: Number, required: false }
     },
     settings: {
-        rules: { type: Boolean, required: true }
+        rules: { type: Boolean, required: true },
+        username: { type: String, required: false },
+        interface_language: { type: String, required: true }
     },
-    access1: {
-        moderation: { type: Boolean, required: true }
+    moderation: {
+        access: { type: Boolean, required: true },
+        currentPage: { type: Number, required: false },
+        currentWord: { type: String, required: false },
+        moderatedCount: { type: Number, required: false }
     },
     subscribe: { type: Boolean, required: true },
     selected_string: { type: String, required: false }
