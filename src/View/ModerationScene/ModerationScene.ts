@@ -78,8 +78,11 @@ moderation.action('agree', async (ctx: MyContext) => {
 moderation.action('decline', async (ctx: MyContext) => {
     try {
         ctx.answerCbQuery()
+        await ModerationController.decline_moderation_word(ctx)
+            .then(async (res) => { console.log(res) })
+            .catch(err => ctx.scene.enter('moderation'))
     } catch (err) {
-        console.log(err)
+        ctx.scene.enter('moderation')
     }
 })
 

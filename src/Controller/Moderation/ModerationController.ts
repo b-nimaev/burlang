@@ -58,4 +58,27 @@ export default class ModerationController {
             console.log(err)
         }
     }
+
+    static async decline_moderation_word (ctx: MyContext) {
+        try {
+            
+            let user: IUser = await UserModel.findOne({
+                id: ctx.from.id
+            })
+
+            let str = await ModerationModel.findOne({
+                id: new ObjectId(user.moderation.currentWord)
+            })
+
+            let moderationWord = await ModerationModel.findOne({ id: str })
+            if (moderationWord) {
+                return moderationWord
+            } else {
+                return 404
+            }
+
+        } catch (err) {
+            console.log(err)
+        }
+    }
 }
