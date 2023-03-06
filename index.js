@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-2
+2 3
 var telegraf_1 = require("telegraf");
 var blitz_1 = require("./src/bot/blitz");
 var dashboard_1 = require("./src/bot/dashboard");
